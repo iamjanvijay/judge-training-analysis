@@ -1,0 +1,11 @@
+{
+    "dataset": "agentica-org/DeepScaleR-Preview-Dataset",
+    "sample_size": 4096,
+    "model": "ministral/Ministral-3b-instruct",
+    "system_prompt": "You are a helpful assistant expert at solving math problems. Solve the problem step by step.\n\nPlease ensure that you provide the **final answer** in the following **boxed format**: \\boxed{[your-final-answer]}",
+    "temperature": 0.0,
+    "max_tokens": 3500,
+    "port": 10012,
+    "seed": 42,
+    "output_path": "/shared/storage-01/users/jvsingh2/judge-gen-eval/outputs/eval-model/deepscalar-ministral-3b.json"
+}
