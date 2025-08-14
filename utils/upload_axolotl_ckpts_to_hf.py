@@ -18,7 +18,7 @@ import jsonlines
 from huggingface_hub import create_repo, upload_folder
 
 # Configuration Constants
-HF_TOKEN = json.load(open("tokens.json"))["HF_TOKEN"]  # private token
+HF_TOKEN = json.load(open("./utils/tokens.json"))["HF_TOKEN"]  # private token
 CHECKPOINT_PREFIX = "checkpoint-"
 
 # Files to ignore during upload (training artifacts and temporary files)
