@@ -1,6 +1,6 @@
 # ------------------------ model & tokenizer --------------------------
-base_model: meta-llama/Llama-3.1-8B-Instruct
-tokenizer_name_or_path: meta-llama/Llama-3.1-8B-Instruct
+base_model: mistralai/Mistral-Small-24B-Instruct-2501
+tokenizer_name_or_path: mistralai/Mistral-Small-24B-Instruct-2501
 
 model_type: AutoModelForCausalLM
 tokenizer_type: AutoTokenizer
@@ -8,8 +8,6 @@ trust_remote_code: true
 load_in_8bit: false
 load_in_4bit: false
 strict: false
-special_tokens:
-  pad_token: "<|end_of_text|>"   # this is the first EOS token in Llama-3.*
 
 # --------------------- RLHF: Direct Preference -----------------------
 rl: dpo
@@ -22,15 +20,15 @@ seed: 42
 dataset_processes: 64
 
 datasets:
-  - path: /fsx/home/janvijay.singh/latest/weak_strong_deepscaler_new_final_formatted/dpo_set_2_weak_no_ques_wise_answers_one_train.jsonl
+  - path: /fsx/home/janvijay.singh/latest/weak_strong_deepscaler_new_final_formatted/dpo_set_1_strong_no_ques_wise_answers_one_train.jsonl
     split: train                                #        with {question/prompt, chosen, rejected}
     type: chatml.intel
 val_set_size: 0
-dataset_prepared_path: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft_dpo/set_2_weak.llama8b.deepscaler.lr_cosine_5e-7/dataset   # ← DPO  CHANGED
-output_dir: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft_dpo/set_2_weak.llama8b.deepscaler.lr_cosine_5e-7      # ← DPO  CHANGED
+dataset_prepared_path: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft_dpo/set_1_strong.mistral24b.deepscaler.lr_cosine_5e-7/dataset   # ← DPO  CHANGED
+output_dir: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft_dpo/set_1_strong.mistral24b.deepscaler.lr_cosine_5e-7      # ← DPO  CHANGED
 
 # ------------------------ sequence & packing -------------------------
-sequence_len: 4850          # unchanged – OK if your pairs fit
+sequence_len: 4800          # unchanged – OK if your pairs fit
 sample_packing: false
 eval_sample_packing: false
 pad_to_sequence_len: true
@@ -38,15 +36,15 @@ pad_to_sequence_len: true
 # ------------------------- logging / tracking ------------------------
 wandb_project: judge-generalisation
 wandb_entity: ksartik-georgia-institute-of-technology
-wandb_name: judge.deepscaler.set_2_weak.llama8b.sft_dpo.lr_cosine_5e-7   # ← DPO  CHANGED
+wandb_name: judge.deepscaler.set_1_strong.mistral24b.sft_dpo.lr_cosine_5e-7   # ← DPO  CHANGED
 use_tensorboard: false
 wandb_watch:
 wandb_log_model:
 
 # ------------------------ training hyper-params ----------------------
-gradient_accumulation_steps: 1
-micro_batch_size: 8
-num_epochs: 3.39
+gradient_accumulation_steps: 2
+micro_batch_size: 4
+num_epochs: 2.7
 optimizer: adamw_torch_fused
 learning_rate: 5e-7        # try the following learning rates: 1e-6, 5e-7, 1e-7
 lr_scheduler: cosine
@@ -59,7 +57,7 @@ resume_from_checkpoint:
 
 # -------------------- evaluation & checkpointing --------------------
 warmup_steps: 100
-save_steps: 280
+save_steps: 700
 save_strategy: steps
 save_total_limit: 30
 load_best_model_at_end: false

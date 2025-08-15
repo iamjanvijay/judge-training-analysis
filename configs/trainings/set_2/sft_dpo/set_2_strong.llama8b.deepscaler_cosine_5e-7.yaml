@@ -22,12 +22,12 @@ seed: 42
 dataset_processes: 64
 
 datasets:
-  - path: /fsx/home/janvijay.singh/latest/weak_strong_deepscaler_new_final_formatted/dpo_set_2_weak_no_ques_wise_answers_one_train.jsonl
+  - path: /jvsingh2/sf-intern/judge-analysis/curate_axolotl_data/weak_strong_deepscaler_new_final_formatted/dpo_set_2_strong_no_ques_wise_answers_one_train.jsonl
     split: train                                #        with {question/prompt, chosen, rejected}
     type: chatml.intel
 val_set_size: 0
-dataset_prepared_path: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft_dpo/set_2_weak.llama8b.deepscaler.lr_cosine_5e-7/dataset   # ← DPO  CHANGED
-output_dir: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft_dpo/set_2_weak.llama8b.deepscaler.lr_cosine_5e-7      # ← DPO  CHANGED
+dataset_prepared_path: /jvsingh2/sf-intern/judge-analysis/axolotl/axolotl_outputs_set_2/sft_dpo/set_2_strong.llama8b.deepscaler.lr_cosine_5e-7/dataset   # ← DPO  CHANGED
+output_dir: /jvsingh2/sf-intern/judge-analysis/axolotl/axolotl_outputs_set_2/sft_dpo/set_2_strong.llama8b.deepscaler.lr_cosine_5e-7      # ← DPO  CHANGED
 
 # ------------------------ sequence & packing -------------------------
 sequence_len: 4850          # unchanged – OK if your pairs fit
@@ -38,15 +38,15 @@ pad_to_sequence_len: true
 # ------------------------- logging / tracking ------------------------
 wandb_project: judge-generalisation
 wandb_entity: ksartik-georgia-institute-of-technology
-wandb_name: judge.deepscaler.set_2_weak.llama8b.sft_dpo.lr_cosine_5e-7   # ← DPO  CHANGED
+wandb_name: judge.deepscaler.set_2_strong.llama8b.sft_dpo.lr_cosine_5e-7   # ← DPO  CHANGED
 use_tensorboard: false
 wandb_watch:
 wandb_log_model:
 
 # ------------------------ training hyper-params ----------------------
-gradient_accumulation_steps: 1
-micro_batch_size: 8
-num_epochs: 3.39
+gradient_accumulation_steps: 4
+micro_batch_size: 2
+num_epochs: 2.8
 optimizer: adamw_torch_fused
 learning_rate: 5e-7        # try the following learning rates: 1e-6, 5e-7, 1e-7
 lr_scheduler: cosine
@@ -66,4 +66,4 @@ load_best_model_at_end: false
 
 # ---------------------------- misc / system -------------------------
 weight_decay: 0.0
-deepspeed: /fsx/home/janvijay.singh/latest/axolotl_configs_latest/zero3.json # remains same as the sft config.
+deepspeed: /jvsingh2/sf-intern/judge-analysis/axolotl/axolotl_configs/distillation-sft/zero3.json # remains same as the sft config.

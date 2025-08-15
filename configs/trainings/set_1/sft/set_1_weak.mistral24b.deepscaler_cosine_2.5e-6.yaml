@@ -1,0 +1,73 @@
+# ------------------------ model & tokenizer --------------------------
+base_model: mistralai/Mistral-Small-24B-Instruct-2501
+model_type: AutoModelForCausalLM
+tokenizer_type: AutoTokenizer
+trust_remote_code: true
+load_in_8bit: false
+load_in_4bit: false
+strict: false
+
+# --------------------------- dataset ---------------------------------
+seed: 42
+dataset_processes: 64
+
+datasets:
+  - path: /fsx/home/janvijay.singh/latest/weak_strong_deepscaler_new_final_formatted/sft_set_1_weak_no_ques_wise_answers_one_train.jsonl
+    type: chat_template
+    chat_template: tokenizer_default
+    field_messages: conversations
+    message_property_mappings:
+      role: from
+      content: value
+    roles:
+      user: ["user"]
+      assistant: ["assistant"]
+    roles_to_train: ["assistant"]
+    train_on_eos: turn
+    message_field_training: train
+    shuffle: true
+
+val_set_size: 0 
+dataset_prepared_path: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft/set_1_weak.mistral24b.deepscaler.lr_cosine_2.5e-6/dataset
+output_dir: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft/set_1_weak.mistral24b.deepscaler.lr_cosine_2.5e-6
+
+# ------------------------ sequence & packing -------------------------
+sequence_len: 4750
+sample_packing: false
+eval_sample_packing: false
+pad_to_sequence_len: true
+
+# ------------------------- logging / tracking ------------------------
+wandb_project: judge-generalisation
+wandb_entity: ksartik-georgia-institute-of-technology
+wandb_name: judge.deepscaler.set_1_weak.mistral24b.lr_cosine_2.5e-6
+use_tensorboard: false
+wandb_watch:
+wandb_log_model:
+
+# ------------------------ training hyper-params ----------------------
+gradient_accumulation_steps: 2
+micro_batch_size: 4
+num_epochs: 3
+optimizer: adamw_torch_fused
+learning_rate: 2.5e-6
+lr_scheduler: cosine
+bf16: true
+fp16: false
+tf32: false
+gradient_checkpointing: true
+flash_attention: true
+resume_from_checkpoint:
+
+# -------------------- evaluation & checkpointing --------------------
+warmup_steps: 100
+# eval_steps: 100
+# evaluation_strategy: steps
+save_steps: 700
+save_strategy: steps
+save_total_limit: 30
+load_best_model_at_end: false
+
+# ---------------------------- misc / system -------------------------
+weight_decay: 0.0
+deepspeed: /fsx/home/janvijay.singh/latest/axolotl_configs_latest/zero3.json

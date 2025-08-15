@@ -14,8 +14,8 @@ special_tokens:
 # --------------------- RLHF: Direct Preference -----------------------
 rl: dpo
 trl:
-  loss_type: "sigmoid_sft"
-  beta: 0.1
+  loss_type: "sigmoid"
+rl_beta: 0.1
 
 # --------------------------- dataset ---------------------------------
 seed: 42
@@ -26,8 +26,8 @@ datasets:
     split: train                                #        with {question/prompt, chosen, rejected}
     type: chatml.intel
 val_set_size: 0
-dataset_prepared_path: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft_dpo/set_2_weak.llama8b.deepscaler.lr_cosine_5e-7/dataset   # ← DPO  CHANGED
-output_dir: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft_dpo/set_2_weak.llama8b.deepscaler.lr_cosine_5e-7      # ← DPO  CHANGED
+dataset_prepared_path: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/dpo/set_2_weak.llama8b.deepscaler.lr_cosine_5e-7/dataset   # ← DPO  CHANGED
+output_dir: /fsx/home/janvijay.singh/latest/axolotl_outputs_latest/dpo/set_2_weak.llama8b.deepscaler.lr_cosine_5e-7      # ← DPO  CHANGED
 
 # ------------------------ sequence & packing -------------------------
 sequence_len: 4850          # unchanged – OK if your pairs fit
@@ -38,7 +38,7 @@ pad_to_sequence_len: true
 # ------------------------- logging / tracking ------------------------
 wandb_project: judge-generalisation
 wandb_entity: ksartik-georgia-institute-of-technology
-wandb_name: judge.deepscaler.set_2_weak.llama8b.sft_dpo.lr_cosine_5e-7   # ← DPO  CHANGED
+wandb_name: judge.deepscaler.set_2_weak.llama8b.dpo.lr_cosine_5e-7   # ← DPO  CHANGED
 use_tensorboard: false
 wandb_watch:
 wandb_log_model:
