@@ -1,0 +1,67 @@
+# ------------------------ model & tokenizer --------------------------
+base_model: mistralai/Ministral-8B-Instruct-2410
+tokenizer_name_or_path: mistralai/Ministral-8B-Instruct-2410
+
+model_type: AutoModelForCausalLM
+tokenizer_type: AutoTokenizer
+trust_remote_code: true
+load_in_8bit: false
+load_in_4bit: false
+strict: false
+
+# --------------------- RLHF: Direct Preference -----------------------
+rl: dpo
+trl:
+  loss_type: "sigmoid_sft"
+  beta: 0.1
+
+# --------------------------- dataset ---------------------------------
+seed: 42
+dataset_processes: 64
+
+datasets:
+  - path: /jvsingh2/sf-intern/judge-analysis/curate_axolotl_data/weak_strong_deepscaler_new_final_formatted/dpo_set_1_strong_no_ques_wise_answers_one_train.jsonl
+    split: train                                #        with {question/prompt, chosen, rejected}
+    type: chatml.intel
+val_set_size: 0
+dataset_prepared_path: /jvsingh2/sf-intern/judge-analysis/axolotl/axolotl_outputs/sft_dpo/set_1_strong.ministral8b.deepscaler.lr_cosine_5e-7/dataset   # ← DPO  CHANGED
+output_dir: /jvsingh2/sf-intern/judge-analysis/axolotl/axolotl_outputs/sft_dpo/set_1_strong.ministral8b.deepscaler.lr_cosine_5e-7      # ← DPO  CHANGED
+
+# ------------------------ sequence & packing -------------------------
+sequence_len: 4750          # unchanged – OK if your pairs fit
+sample_packing: false
+eval_sample_packing: false
+pad_to_sequence_len: true
+
+# ------------------------- logging / tracking ------------------------
+wandb_project: judge-generalisation
+wandb_entity: ksartik-georgia-institute-of-technology
+wandb_name: judge.deepscaler.set_1_strong.ministral8b.sft_dpo.lr_cosine_5e-7   # ← DPO  CHANGED
+use_tensorboard: false
+wandb_watch:
+wandb_log_model:
+
+# ------------------------ training hyper-params ----------------------
+gradient_accumulation_steps: 2
+micro_batch_size: 4
+num_epochs: 2.7
+optimizer: adamw_torch_fused
+learning_rate: 5e-7        # try the following learning rates: 1e-6, 5e-7, 1e-7
+lr_scheduler: cosine
+bf16: true
+fp16: false
+tf32: false
+gradient_checkpointing: true
+flash_attention: true
+resume_from_checkpoint:
+
+# -------------------- evaluation & checkpointing --------------------
+warmup_steps: 100
+save_steps: 280
+save_strategy: steps
+save_total_limit: 30
+load_best_model_at_end: false
+
+# ---------------------------- misc / system -------------------------
+weight_decay: 0.0
+deepspeed: /jvsingh2/sf-intern/judge-analysis/axolotl/axolotl_configs/distillation-sft/zero3.json # remains same as the sft config.
