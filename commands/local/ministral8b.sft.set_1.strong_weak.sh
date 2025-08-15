@@ -1,0 +1,5 @@
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7;
+accelerate launch --multi-gpu --num-machines 1 --num-processes 8 --main_process_port 29500 --same-network --rdzv_backend  static --mixed_precision bf16 -m axolotl.cli.train /jvsingh2/sf-intern/judge-analysis/axolotl/axolotl_configs_latest/set_1/sft/set_1_strong.ministral8b.deepscaler_cosine_2.5e-6.yaml;
+
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7;
+accelerate launch --multi-gpu --num-machines 1 --num-processes 8 --main_process_port 29500 --same-network --rdzv_backend  static --mixed_precision bf16 -m axolotl.cli.train /jvsingh2/sf-intern/judge-analysis/axolotl/axolotl_configs_latest/set_1/sft/set_1_weak.ministral8b.deepscaler_cosine_2.5e-6.yaml;
