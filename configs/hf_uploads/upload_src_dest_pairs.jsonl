@@ -1,2 +1,4 @@
-{"ckpt_basedir": "/fsx/home/janvijay.singh/latest/axolotl_outputs_latest/dpo/set_2_weak.llama8b.deepscaler.lr_cosine_5e-7", "repo_path": "iamjanvijay/dpo.set_2_weak.llama8b.deepscaler"}
-{"ckpt_basedir": "/fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft_dpo/set_2_weak.llama8b.deepscaler.lr_cosine_5e-7", "repo_path": "iamjanvijay/sft_dpo.set_2_weak.llama8b.deepscaler"}
+{"ckpt_basedir": "/fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft/set_1_weak.mistral24b.deepscaler.lr_cosine_2.5e-6", "repo_path": "iamjanvijay/sft.set_1_weak.mistral24b.deepscaler"}
+{"ckpt_basedir": "/fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft/set_1_strong.mistral24b.deepscaler.lr_cosine_2.5e-6", "repo_path": "iamjanvijay/sft.set_1_strong.mistral24b.deepscaler"}
+{"ckpt_basedir": "/fsx/home/janvijay.singh/latest/axolotl_outputs_latest/dpo/set_1_weak.mistral24b.deepscaler.lr_cosine_5e-7", "repo_path": "iamjanvijay/dpo.set_1_weak.mistral24b.deepscaler"}
+{"ckpt_basedir": "/fsx/home/janvijay.singh/latest/axolotl_outputs_latest/sft_dpo/set_1_weak.mistral24b.deepscaler.lr_cosine_5e-7", "repo_path": "iamjanvijay/sft_dpo.set_1_weak.mistral24b.deepscaler"}
