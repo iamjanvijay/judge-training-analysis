@@ -17,6 +17,10 @@ import json
 import jsonlines
 from huggingface_hub import create_repo, upload_folder
 
+# Add utils to path for importing common functions
+sys.path.append("./utils")
+from common import check_working_directory
+
 # Configuration Constants
 HF_TOKEN = json.load(open("./utils/tokens.json"))["HF_TOKEN"]  # private token
 CHECKPOINT_PREFIX = "checkpoint-"
@@ -63,6 +67,10 @@ def upload_checkpoint(ckpt_path: str, repo_path: str, ckpt_dir: str) -> None:
     )
 
 def main() -> None:
+    # Verify working directory
+    if not check_working_directory():
+        exit(1)
+
     if len(sys.argv) != 2:
         print("Usage: python upload_axolotl_ckpts_to_hf.py <source_dest_pairs.jsonl>")
         sys.exit(1)

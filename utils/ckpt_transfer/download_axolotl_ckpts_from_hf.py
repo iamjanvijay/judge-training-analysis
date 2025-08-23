@@ -16,6 +16,10 @@ import json
 import jsonlines
 from huggingface_hub import snapshot_download
 
+# Add utils to path for importing common functions
+sys.path.append("./utils")
+from common import check_working_directory
+
 # Configuration Constants
 HF_TOKEN = json.load(open("./utils/tokens.json"))["HF_TOKEN"]
 CHECKPOINT_PREFIX = "checkpoint-"
@@ -47,6 +51,10 @@ def download_checkpoint(repo_path: str, local_dir: str) -> None:
         print(f"Error downloading from {repo_path}: {e}")
 
 def main() -> None:
+    # Verify working directory
+    if not check_working_directory():
+        exit(1)
+
     if len(sys.argv) != 3:
         print("Usage: python download_axolotl_ckpts_from_hf.py <source_dest_pairs.jsonl> <local_dir>")
         sys.exit(1)
