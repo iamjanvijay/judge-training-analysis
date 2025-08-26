@@ -11,6 +11,7 @@ def check_text_for_verdict_a(text):
         or "Response A is better" in " ".join(text.replace("*", "").split())
         or "Response A is the better" in " ".join(text.replace("*", "").split())
         or "Response A is than better" in " ".join(text.replace("*", "").split())
+        or "better response is Response A" in " ".join(text.replace("*", "").split())
     )
 
 def check_text_for_verdict_b(text):
@@ -21,6 +22,7 @@ def check_text_for_verdict_b(text):
         or "Response B is better" in " ".join(text.replace("*", "").split())
         or "Response B is the better" in " ".join(text.replace("*", "").split())
         or "Response B is than better" in " ".join(text.replace("*", "").split())
+        or "better response is Response B" in " ".join(text.replace("*", "").split())
     )
 
 def extract_json_from_codeblock(text):
