@@ -35,6 +35,8 @@ def run_eval(model, input_files, output_files, gpu_id, extra_args):
         "--top_p", str(extra_args.top_p),
         "--gpu_mem_util", str(extra_args.gpu_mem_util),
     ]
+    if extra_args.overwrite:
+        cmd.append("--overwrite")
     if extra_args.trust_remote_code:
         cmd.append("--trust_remote_code")
     print(f"[GPU{gpu_id}] {shlex.join(cmd)}")
@@ -95,6 +97,7 @@ def main():
     p.add_argument("--gpu_mem_util", type=float, default=0.9)
     p.add_argument("--trust_remote_code", action="store_true")
     p.add_argument("--dry_run", action="store_true", help="Print commands without executing them")
+    p.add_argument("--overwrite", action="store_true", help="Overwrite existing output files. If False, skip files that already exist.")
     args = p.parse_args()
 
     # Read all config files

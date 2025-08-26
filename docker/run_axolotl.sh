@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directory to mount inside container
-MOUNT_DIR="/fsx/home/janvijay.singh"
+MOUNT_DIR="/shared/storage-01/users/jvsingh2"
 
 # Run Docker container with GPU support and resource configurations
 docker run \
@@ -14,4 +14,4 @@ docker run \
     --ulimit memlock=-1 \
     --ulimit stack=67108864 \
     -v $MOUNT_DIR:$MOUNT_DIR \
-    docker.io/iamjanvijay/axolotl:mod-sigmoid-sft-dpo-loss-v2
+    docker.io/iamjanvijay/axolotl:mod-sigmoid-sft-dpo-loss-with-vllm-v3

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directory to mount inside container
-MOUNT_DIR="/fsx/home/janvijay.singh"
+MOUNT_DIR="/shared/storage-01/users/jvsingh2"
 
 # Run Docker container with GPU support and resource configurations
 docker run \
