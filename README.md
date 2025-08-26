@@ -32,3 +32,13 @@ Compute overlap statistics for formatted_data_splits and data_splits subfolders:
 ```bash
 python utils/data/stats/compute_overlap_stats.py
 ```
+
+Plot accuracy curves for all models and training algorithms across all evaluation splits:
+```bash
+python ./analysis/plot_accuracy_curves.py
+```
+
+If the format error rate is high, recompute the metrics (accuracy / consistent accuracy / format error rate) after updating get_label_updated in the script below:
+```bash
+python ./eval/resolve_format_errors_in_scores.py
+```
