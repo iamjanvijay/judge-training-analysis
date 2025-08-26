@@ -58,3 +58,6 @@ tokens.json
 # Custom
 ckpts/
 sf-judge-data/
+eval-results/
+eval-plots/
+*.temp
