@@ -138,12 +138,6 @@ def create_plots(agg_scores, plot_base_path):
                     plots_to_remove.append((set_name, model_name, train_algo, train_cap, eval_type, eval_cap))
     for set_name, model_name, train_algo, train_cap, eval_type, eval_cap in plots_to_remove:
         del plots[(set_name, model_name, train_algo, train_cap)][eval_type][eval_cap]
-    for set_name, model_name, train_algo, train_cap, eval_type, _ in plots_to_remove:
-        if eval_type in plots[(set_name, model_name, train_algo, train_cap)] and len(plots[(set_name, model_name, train_algo, train_cap)][eval_type]) == 0:
-            del plots[(set_name, model_name, train_algo, train_cap)][eval_type]
-    for set_name, model_name, train_algo, train_cap, _, _ in plots_to_remove:
-        if (set_name, model_name, train_algo, train_cap) in plots and len(plots[(set_name, model_name, train_algo, train_cap)]) == 0:
-            del plots[(set_name, model_name, train_algo, train_cap)]
 
     # Create the plots
     plot_path_prefix = os.path.join(plot_base_path, "plot_type_1")
