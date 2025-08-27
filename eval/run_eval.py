@@ -86,7 +86,7 @@ def process_label_dict(label_dict):
 
     # If the result is a list, take the last element
     if isinstance(label_dict, list):
-        for item in label_dict:
+        for item in reversed(label_dict):
             if isinstance(item, dict) and "verdict" in item and item["verdict"] in ['A', 'Response A', 'B', 'Response B']:
                 label_dict = item
                 break

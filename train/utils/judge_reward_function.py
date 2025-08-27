@@ -23,7 +23,7 @@ def process_label_dict(label_dict):
     if isinstance(label_dict, list):
         if not label_dict:
             return 'C'
-        for item in label_dict:
+        for item in reversed(label_dict):
             if isinstance(item, dict) and item.get("verdict") in ['A', 'B']:
                 return item
         return label_dict[-1]
@@ -45,9 +45,16 @@ def get_label(response):
     Attempt to extract the verdict label from the response.
     Returns 'A', 'B', or 'C' (cannot parse).
     """
+    response = response[-2000:] # only consider the last 2000 characters of the response.
     text = extract_json_from_codeblock(response)
-    label_dict = repair_json(text, return_objects=True)
-    label_dict = process_label_dict(label_dict)
+
+    try:
+        label_dict = repair_json(text, return_objects=True)
+        label_dict = process_label_dict(label_dict)
+    except Exception as e:
+        # Catch RecursionError, ValueError, etc.
+        print(f"[DEBUG] repair_json failed: {e}")
+        return 'C'
 
     if not validate_verdict_dict(label_dict):
         if check_text_for_verdict_a(text):
