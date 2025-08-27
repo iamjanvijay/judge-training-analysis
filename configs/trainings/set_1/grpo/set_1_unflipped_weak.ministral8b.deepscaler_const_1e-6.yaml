@@ -4,7 +4,7 @@ hydra:
   searchpath:
     - pkg://verl.trainer.config
 
-base_dir: /shared/storage-01/users/jvsingh2/sf-intern/github/judge-training-analysis
+base_dir: /shared/storage-01/users/jvsingh2/sf-intern/github/judge-training-analysis # this can be changed from the command
 
 defaults:
   - ppo_trainer
@@ -39,7 +39,7 @@ actor_rollout_ref:
     strategy: fsdp  # This is for backward-compatibility
     ppo_mini_batch_size: 128  # [CHANGED]
     ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
-    ppo_micro_batch_size_per_gpu: 2  # [CHANGED]
+    ppo_micro_batch_size_per_gpu: 1  # [CHANGED] [OOM lower]
     use_dynamic_bsz: False
     ppo_max_token_len_per_gpu: 16384 # n * ${data.max_prompt_length} + ${data.max_response_length}
     grad_clip: 1.0
@@ -73,7 +73,7 @@ actor_rollout_ref:
         # transformer_layer_cls_to_wrap: None
         min_num_params: 0
     log_prob_micro_batch_size: null # will be deprecated, use log_prob_micro_batch_size_per_gpu
-    log_prob_micro_batch_size_per_gpu: 2  # [CHANGED]
+    log_prob_micro_batch_size_per_gpu: 1  # [CHANGED] [OOM lower]
     log_prob_use_dynamic_bsz: ${actor_rollout_ref.actor.use_dynamic_bsz}
     log_prob_max_token_len_per_gpu: ${actor_rollout_ref.actor.ppo_max_token_len_per_gpu}
     ulysses_sequence_parallel_size: ${actor_rollout_ref.actor.ulysses_sequence_parallel_size} # sp size
@@ -87,7 +87,7 @@ actor_rollout_ref:
     response_length: ${data.max_response_length}
     # for vllm rollout
     dtype: bfloat16 # should align with FSDP
-    gpu_memory_utilization: 0.5 # [CHANGED]
+    gpu_memory_utilization: 0.4 # [CHANGED] [OOM lower]
     ignore_eos: False
     enforce_eager: False
     free_cache_engine: False
@@ -97,7 +97,7 @@ actor_rollout_ref:
     max_model_len: null
     max_num_seqs: 1024
     log_prob_micro_batch_size: null # will be deprecated, use log_prob_micro_batch_size_per_gpu
-    log_prob_micro_batch_size_per_gpu: 2 # [CHANGED]
+    log_prob_micro_batch_size_per_gpu: 1 # [CHANGED] [OOM lower]
     log_prob_use_dynamic_bsz: ${actor_rollout_ref.actor.use_dynamic_bsz}
     log_prob_max_token_len_per_gpu: ${actor_rollout_ref.actor.ppo_max_token_len_per_gpu}
     disable_log_stats: True
@@ -197,8 +197,8 @@ trainer:
   n_gpus_per_node: 8
   save_freq: 8 # [CHANGED]
   # auto: find the last ckpt to resume. If can't find, start from scratch
-  resume_mode: auto # or auto or resume_path if
-  resume_from_path: False
+  resume_mode: resume_path # or auto or resume_path if
+  resume_from_path: ${base_dir}/train-output-dir/checkpoints/${trainer.project_name}/${trainer.experiment_name}/global_step_64
   test_freq: 8 # [CHANGED]
   critic_warmup: 0
   default_hdfs_dir: null
