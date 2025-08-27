@@ -14,4 +14,4 @@ docker run \
     --ulimit memlock=-1 \
     --ulimit stack=67108864 \
     -v $MOUNT_DIR:$MOUNT_DIR \
-    docker.io/iamjanvijay/verl:mod-vllm-fsdp-with-verl-installed-v2
+    docker.io/iamjanvijay/verl:mod-vllm-fsdp-with-verl-installed-v3

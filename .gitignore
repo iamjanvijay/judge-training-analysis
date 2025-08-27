@@ -60,4 +60,6 @@ ckpts/
 sf-judge-data/
 eval-results/
 eval-plots/
+train-output-dir/
+verl/
 *.temp

@@ -10,7 +10,7 @@ def check_text_for_verdict_a(text):
         or '{"verdict": "Response A"}' in text
         or "Response A is better" in " ".join(text.replace("*", "").split())
         or "Response A is the better" in " ".join(text.replace("*", "").split())
-        or "Response A is than better" in " ".join(text.replace("*", "").split())
+        or "Response A is better than" in " ".join(text.replace("*", "").split())
         or "better response is Response A" in " ".join(text.replace("*", "").split())
     )
 
@@ -21,7 +21,7 @@ def check_text_for_verdict_b(text):
         or '{"verdict": "Response B"}' in text
         or "Response B is better" in " ".join(text.replace("*", "").split())
         or "Response B is the better" in " ".join(text.replace("*", "").split())
-        or "Response B is than better" in " ".join(text.replace("*", "").split())
+        or "Response B is better than" in " ".join(text.replace("*", "").split())
         or "better response is Response B" in " ".join(text.replace("*", "").split())
     )
 
