@@ -1,29 +1,18 @@
+# Standard library imports
 import json
 import os
+import sys
+
+# Third-party imports
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
 import pandas as pd
+from matplotlib.patches import Patch
 
-# Add analysis to path for importing common functions
+# Local imports
 sys.path.append("./analysis")
 from read_eval_results import read_eval_results
 
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
-
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
-
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
-
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
 
 def plot_six_block_advantage(df, metric_type, degradation_type, save_path=None):
     """
