@@ -191,6 +191,8 @@ def compute_advantage_metrics(agg_scores, split_types, metrics, degradation_type
         if train_cap not in train_meta_to_eval_scores[meta][eval_cap]:
             train_meta_to_eval_scores[meta][eval_cap][train_cap] = {}
         if eval_type not in train_meta_to_eval_scores[meta][eval_cap][train_cap]:
+            # this is different from the generalization case, where we have: train_meta_to_eval_scores[meta][train_cap][eval_cap][eval_type] instead, 
+            # since we want to vary eval_cap there, but here we want to vary train_cap so train_cap appears at a deeper level in dictionary.
             train_meta_to_eval_scores[meta][eval_cap][train_cap][eval_type] = agg_scores[(set_name, train_algo, train_cap, ckpt_step, model_name, eval_cap, eval_type)]
 
     # All eval types: {'seen_questions_seen_answers', 'seen_questions_unseen_answers', 'unseen_questions_unseen_answers'}
