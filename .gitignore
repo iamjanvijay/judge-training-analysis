@@ -64,3 +64,4 @@ train-output-dir/
 verl/
 *.temp
 outputs/
+core*
