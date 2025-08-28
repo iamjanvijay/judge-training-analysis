@@ -1,166 +1,258 @@
+# Standard library imports
 import json
 import os
-import matplotlib.pyplot as plt
-import numpy as np
 import sys
 
-# Add analysis to path for importing common functions
+# Third-party imports
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from matplotlib.patches import Patch
+
+# Local imports
 sys.path.append("./analysis")
 from read_eval_results import read_eval_results
 
-def plot_accuracy_curve(scores, set_name, model_name, train_algo, train_cap, accuracy_type, plot_path):
+
+def plot_six_block_generalisation(df, metric_type, degradation_type, save_path=None):
     """
-    Input: 
-        - a (set_name, model_name, train_algo, train_cap)
-        - scores: a dictionary of scores for a (set_name, model_name, train_algo, train_cap)
-            - accuracy at for a eval_type, eval_cap at a ckpt_step is given by scores[eval_type][eval_cap][ckpt_step]["accuracy"]
-    Output: a plot of accuracy (y-axis) vs. ckpt_step (x-axis).
-    Each plot has five line curves. 
-        - if eval_cap == train_cap and eval_type == "seen_questions_seen_answers", then live curve is gray in color. # train subset
-        - if eval_cap == train_cap and eval_type == "seen_questions_unseen_answers", then live curve is light-green in color. (same answer dist)
-        - if eval_cap == train_cap and eval_type == "unseen_questions_unseen_answers", then live curve is dark-green in color. # unseen questions (same answer dist)
-        - if eval_cap != train_cap and eval_type == "seen_questions_unseen_answers", then live curve is light-red in color. (different answer dist)
-        - if eval_cap != train_cap and eval_type == "unseen_questions_unseen_answers", then live curve is dark-red in color. # unseen questions (different answer dist)
-
+    2x3 grid of barplots.
+    Y-axis labels include the direction per row:
+      - Row 0: Degradation (weak→strong)
+      - Row 1: Degradation (strong→weak)
+    Legend is above the grid. Bars annotated with rounded values.
     """
-    # Set up the plot
-    plt.figure(figsize=(12, 8))
-    
-    # Define colors for different evaluation types
-    colors = {
-        ('seen_questions_seen_answers', True): 'gray',      # eval_cap == train_cap
-        ('seen_questions_unseen_answers', True): 'lightgreen',  # eval_cap == train_cap
-        ('unseen_questions_unseen_answers', True): 'darkgreen', # eval_cap == train_cap
-        ('seen_questions_unseen_answers', False): 'lightcoral', # eval_cap != train_cap
-        ('unseen_questions_unseen_answers', False): 'darkred',  # eval_cap != train_cap
-    }
-    
-    # Define line styles and markers for better distinction
-    line_styles = ['-', '--', '-.', ':', '-']
-    markers = ['o', 's', '^', 'D', 'v']
-    
-    # Track all checkpoint steps to set x-axis properly
-    all_ckpt_steps = set()
-    
-    # Plot each evaluation type
-    for eval_type in scores:
-        for eval_cap in scores[eval_type]:
-            # Determine if eval_cap matches train_cap
-            cap_match = (eval_cap == train_cap)
-            
-            # Get the color for this combination
-            color_key = (eval_type, cap_match)
-            if color_key in colors:
-                color = colors[color_key]
-            else:
-                # Fallback color if not in our defined set
-                color = 'blue'
-            
-            # Extract checkpoint steps and accuracies
-            ckpt_steps = []
-            accuracies = []
-            
-            for ckpt_step in scores[eval_type][eval_cap]:
-                all_ckpt_steps.add(ckpt_step)
-                ckpt_steps.append(ckpt_step)
-                accuracy = scores[eval_type][eval_cap][ckpt_step][accuracy_type]
-                accuracies.append(accuracy)
-            
-            # Sort by checkpoint step
-            sorted_data = sorted(zip(ckpt_steps, accuracies))
-            ckpt_steps, accuracies = zip(*sorted_data)
-            
-            # Create label for legend
-            cap_status = "same" if cap_match else "different"
-            label = f"{eval_type.replace('_', ' ')} ({cap_status} cap)"
-            
-            # Plot the line
-            plt.plot(ckpt_steps, accuracies, 
-                    color=color, 
-                    linewidth=2.5, 
-                    marker='o', 
-                    markersize=6, 
-                    label=label,
-                    alpha=0.8)
-    
-    # Customize the plot
-    plt.xlabel('Checkpoint Step', fontsize=14, fontweight='bold')
-    plt.ylabel(accuracy_type.upper(), fontsize=14, fontweight='bold')
-    
-    # Set title with model and training information
-    title = f"{accuracy_type.upper()} Curves: {model_name.upper()} - {train_algo.upper()} - {train_cap.upper()}\nDataset: {set_name}"
-    plt.title(title, fontsize=16, fontweight='bold', pad=20)
-    
-    # Customize grid
-    plt.grid(True, alpha=0.3, linestyle='--')
-    
-    # Set x-axis to show all checkpoint steps
-    if all_ckpt_steps:
-        plt.xticks(sorted(all_ckpt_steps), fontsize=12)
-    
-    # Set y-axis limits with some padding
-    plt.ylim(0, 1.05)
-    
-    # Add legend with better positioning
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=11, framealpha=0.9)
-    
-    # Adjust layout to prevent label cutoff
-    plt.tight_layout()
-    
-    # Save the plot
-    plt.savefig(plot_path, dpi=300, bbox_inches='tight', facecolor='white')
-    plt.close()
-    
-    print(f"Plot saved to: {plot_path}")
 
+    row_gen = ["weak->strong", "strong->weak"]
+    col_models = ["llama8b", "ministral8b", "mistral24b"]
 
-def create_plots(agg_scores, plot_base_path):
+    pairs = [
+        ("sft",      "seen_questions_unseen_answers"),
+        ("sft",      "unseen_questions_unseen_answers"),
+        ("dpo",      "seen_questions_unseen_answers"),
+        ("dpo",      "unseen_questions_unseen_answers"),
+        ("sft_dpo",  "seen_questions_unseen_answers"),
+        ("sft_dpo",  "unseen_questions_unseen_answers"),
+    ]
 
-    ### PLOTS TYPE 1: 
-    ### accuracy with x-axis as ckpt_step, and y-axis as accuracy, and multiple eval splits as line curves.
-    plots = {}
+    # base colors (no explicit colors; use default cycle)
+    prop_cycle = plt.rcParams['axes.prop_cycle'].by_key().get('color', [])
+    if len(prop_cycle) < 3:
+        prop_cycle = prop_cycle + [f"C{i}" for i in range(10)]
+    algo_colors = {"sft": prop_cycle[0], "dpo": prop_cycle[1], "sft_dpo": prop_cycle[2]}
+
+    def _lookup_value(gen_type, model, algo, split):
+        sel = df[
+            (df["generalisation_type"] == gen_type) &
+            (df["model_name"] == model) &
+            (df["train_algo"] == algo) &
+            (df["eval_split"] == split)
+        ]["value"].values
+        
+        if len(sel) == 0:
+            raise ValueError(
+                f"Zero rows found for gen_type={gen_type}, "
+                f"model={model}, algo={algo}, split={split}. "
+                f"Expected exactly 1."
+            )
+        if len(sel) > 1:
+            raise ValueError(
+                f"Multiple rows found for gen_type={gen_type}, "
+                f"model={model}, algo={algo}, split={split}. "
+                f"Expected exactly 1."
+            )
+        return float(sel[0])
+
+    # global ylim across all panels for comparability
+    all_vals = []
+    for r in row_gen:
+        for c in col_models:
+            for algo, split in pairs:
+                all_vals.append(_lookup_value(r, c, algo, split))
+    global_max = np.nanmax(all_vals) if len(all_vals) else 1.0
+    ylim_top = 1.2 * (global_max if np.isfinite(global_max) else 1.0)
+
+    fig, axes = plt.subplots(2, 3, figsize=(13, 7), sharey=True, constrained_layout=True)
+    bar_positions = np.arange(6)
+    bar_width = 0.75
+
+    for i, gen in enumerate(row_gen):
+        for j, model in enumerate(col_models):
+            ax = axes[i, j]
+            for k, (algo, split) in enumerate(pairs):
+                val = _lookup_value(gen, model, algo, split)
+                alpha = 0.5 if split == "seen_questions_unseen_answers" else 1.0
+                ax.bar(
+                    bar_positions[k], val,
+                    width=bar_width,
+                    color=algo_colors[algo],
+                    alpha=alpha,
+                    edgecolor='black', linewidth=0.6
+                )
+                # annotate value
+                if not np.isnan(val) and abs(val) > 1e-3:
+                    ax.text(
+                        bar_positions[k], val + ylim_top*0.015,
+                        str(round(val, 2)),
+                        ha="center", va="bottom", fontsize=8
+                    )
+
+            ax.set_ylim(0, ylim_top)
+            ax.set_xticks(bar_positions)
+            ax.set_xticklabels(["sft-s","sft-u","dpo-s","dpo-u","sft_dpo-s","sft_dpo-u"],
+                               fontsize=8, rotation=20)
+
+            # per-row y-axis label with direction
+            if j == 0:
+                ylab = "Degradation (weak\u2192strong)" if gen == "weak->strong" else "Degradation (strong\u2192weak)"
+                ax.set_ylabel(ylab, fontsize=9)
+
+            if i == 0:
+                ax.set_title(model, fontsize=11, weight="bold")
+
+            ax.grid(axis="y", linestyle="--", alpha=0.25)
+
+    # legend above
+    legend_handles = [
+        Patch(facecolor=algo_colors["sft"], edgecolor='black', alpha=0.5, label="sft (seen questions)"),
+        Patch(facecolor=algo_colors["sft"], edgecolor='black', alpha=1.0, label="sft (unseen questions)"),
+        Patch(facecolor=algo_colors["dpo"], edgecolor='black', alpha=0.5, label="dpo (seen questions)"),
+        Patch(facecolor=algo_colors["dpo"], edgecolor='black', alpha=1.0, label="dpo (unseen questions)"),
+        Patch(facecolor=algo_colors["sft_dpo"], edgecolor='black', alpha=0.5, label="sft_dpo (seen questions)"),
+        Patch(facecolor=algo_colors["sft_dpo"], edgecolor='black', alpha=1.0, label="sft_dpo (unseen questions)"),
+    ]
+    fig.legend(handles=legend_handles, ncols=6, loc="upper center",
+               bbox_to_anchor=(0.5, 1.05), frameon=False, fontsize=9)
+
+    fig.suptitle(
+        f"Degradation by Generalisation Direction and Model\n"
+        f"Metric: {metric_type.replace('_', ' ').title()} | Degradation: {degradation_type.replace('_', ' ').title()}",
+        y=1.12, fontsize=13, weight="bold"
+    )
+
+    if save_path:
+        fig.savefig(save_path, bbox_inches="tight", dpi=300)
+        print(f"Plot saved to {save_path}")
+    else:
+        plt.show()
+
+def compute_generalization_metrics_util(scores, train_cap, split_types, metrics, degradation_types, generalization_types):
+    """
+    example of a generalization metric:  (Acc(train=weak, eval=strong) - Acc(train=weak, eval=weak)) / (Acc(train=weak,eval=weak))
+    """
+    generalization_metrics = {}
+    
+    eval_baseline_cap = train_cap
+    eval_comparator_cap = "weak" if train_cap == "strong" else "strong"
+    generalization_type = f"{eval_baseline_cap}->{eval_comparator_cap}"
+    assert generalization_type in generalization_types, f"Generalization type {generalization_type} not in {generalization_types}"
+
+    for eval_type in split_types:
+        if eval_type not in generalization_metrics:
+            generalization_metrics[eval_type] = {}
+
+        for accuracy_type in metrics:
+            if accuracy_type not in generalization_metrics[eval_type]:
+                generalization_metrics[eval_type][accuracy_type] = {}
+
+            baseline = scores[eval_baseline_cap][eval_type][accuracy_type] # eval-capability same as train-capability. Acc(train=weak, eval=weak)
+            comparator = scores[eval_comparator_cap][eval_type][accuracy_type] # eval-capability different from train-capability. Acc(train=weak, eval=strong)
+            
+            absolute_degradation = 100.0 * (baseline - comparator) # ideally this should be >= 0. since baseline should be >= comparator in our case.
+            relative_degradation = absolute_degradation / baseline # ideally this should be >= 0 too.
+
+            generalization_metrics[eval_type][accuracy_type] = {
+                "absolute_degradation": absolute_degradation,
+                "relative_degradation": relative_degradation
+            }
+            for degradation_type in generalization_metrics[eval_type][accuracy_type]:
+                assert degradation_type in degradation_types, f"Degradation type {degradation_type} not in {degradation_types}"
+
+    return generalization_type, generalization_metrics
+
+def compute_generalization_metrics(agg_scores, split_types, metrics, degradation_types, generalization_types):
+
+    # Reorganize the scores into a dictionary of train_meta_to_eval_scores[train_meta][train_cap][eval_cap][eval_type] -> score
+    train_meta_to_eval_scores = {}
     for (set_name, train_algo, train_cap, ckpt_step, model_name, eval_cap, eval_type) in agg_scores:
-        if (set_name, model_name, train_algo, train_cap) not in plots:
-            plots[(set_name, model_name, train_algo, train_cap)] = {}
-        if eval_type not in plots[(set_name, model_name, train_algo, train_cap)]:
-            plots[(set_name, model_name, train_algo, train_cap)][eval_type] = {}
-        if eval_cap not in plots[(set_name, model_name, train_algo, train_cap)][eval_type]:
-            plots[(set_name, model_name, train_algo, train_cap)][eval_type][eval_cap] = {}
-        plots[(set_name, model_name, train_algo, train_cap)][eval_type][eval_cap][ckpt_step] = agg_scores[(set_name, train_algo, train_cap, ckpt_step, model_name, eval_cap, eval_type)]
-    
-    # Remove plots with just 1 ckpt_steps
-    plots_to_remove = []
-    for (set_name, model_name, train_algo, train_cap) in plots:
-        for eval_type in plots[(set_name, model_name, train_algo, train_cap)]:
-            for eval_cap in plots[(set_name, model_name, train_algo, train_cap)][eval_type]:
-                ckpt_steps_count = len(plots[(set_name, model_name, train_algo, train_cap)][eval_type][eval_cap])
-                if ckpt_steps_count <= 1:
-                    plots_to_remove.append((set_name, model_name, train_algo, train_cap, eval_type, eval_cap))
-    for set_name, model_name, train_algo, train_cap, eval_type, eval_cap in plots_to_remove:
-        del plots[(set_name, model_name, train_algo, train_cap)][eval_type][eval_cap]
+        meta = (set_name, train_algo, ckpt_step, model_name)
+        if meta not in train_meta_to_eval_scores:
+            train_meta_to_eval_scores[meta] = {}
+        
+        if train_cap not in train_meta_to_eval_scores[meta]:
+            train_meta_to_eval_scores[meta][train_cap] = {}
+        if eval_cap not in train_meta_to_eval_scores[meta][train_cap]:
+            train_meta_to_eval_scores[meta][train_cap][eval_cap] = {}
+        if eval_type not in train_meta_to_eval_scores[meta][train_cap][eval_cap]:
+            train_meta_to_eval_scores[meta][train_cap][eval_cap][eval_type] = agg_scores[(set_name, train_algo, train_cap, ckpt_step, model_name, eval_cap, eval_type)]
 
-    # Create the plots
-    plot_path_prefix = os.path.join(plot_base_path, "plot_type_1")
-    os.makedirs(plot_path_prefix, exist_ok=True)
-    for (set_name, model_name, train_algo, train_cap) in plots:
-        plot_path = os.path.join(plot_path_prefix, f"{set_name}.{model_name}.{train_algo}.{train_cap}.accuracy.png")
-        plot_accuracy_curve(plots[(set_name, model_name, train_algo, train_cap)], set_name, model_name, train_algo, train_cap, "accuracy", plot_path)
-        plot_path = os.path.join(plot_path_prefix, f"{set_name}.{model_name}.{train_algo}.{train_cap}.consistent_accuracy.png")
-        plot_accuracy_curve(plots[(set_name, model_name, train_algo, train_cap)], set_name, model_name, train_algo, train_cap, "consistent_accuracy", plot_path)
+    # All eval types: {'seen_questions_seen_answers', 'seen_questions_unseen_answers', 'unseen_questions_unseen_answers'}
+    last_ckpt_steps = {"ministral8b": 2800, "mistral24b": 2800, "llama8b": 4200} # for llama series of models we trained longer until 4200 steps for rest of the models we trained until 2800 steps.
 
-    ### PLOTS TYPE 2: 
-    ### accuracy with x-axis as ckpt_step, and y-axis as incorrect_format_rate, and multiple eval splits as line curves.
+    # Compute the generalization metrics, at the last ckpt step.
+    gen_meta_to_gen_scores = {}
+    for train_meta in train_meta_to_eval_scores:
+        set_name, train_algo, ckpt_step, model_name = train_meta
+        if ckpt_step != last_ckpt_steps[model_name]: # if not the last ckpt step, skip
+            continue
 
-    # Create the plots
-    plot_path_prefix = os.path.join(plot_base_path, "plot_type_2")
-    os.makedirs(plot_path_prefix, exist_ok=True)
-    for (set_name, model_name, train_algo, train_cap) in plots:
-        plot_path = os.path.join(plot_path_prefix, f"{set_name}.{model_name}.{train_algo}.{train_cap}.incorrect_format_rate.png")
-        plot_accuracy_curve(plots[(set_name, model_name, train_algo, train_cap)], set_name, model_name, train_algo, train_cap, "incorrect_format_rate", plot_path)
+        for train_cap in ["weak", "strong"]:
+            generalization_type, generalization_metrics = compute_generalization_metrics_util(train_meta_to_eval_scores[train_meta][train_cap], train_cap, split_types, metrics, degradation_types, generalization_types)
+            generalization_meta = (train_algo, model_name, generalization_type)
+            assert generalization_meta not in gen_meta_to_gen_scores, f"Generalization meta {generalization_meta} already exists"
+            gen_meta_to_gen_scores[generalization_meta] = generalization_metrics
 
+    return gen_meta_to_gen_scores
+
+def create_dataframe_for_plots(gen_meta_to_gen_scores):
+
+    #### STEP 1: Convert the gen_meta_to_gen_scores to a pandas dataframe
+    rows = []
+    for (train_algo, model_name, gen_type) in gen_meta_to_gen_scores:
+        for split in ["seen_questions_unseen_answers", "unseen_questions_unseen_answers"]:
+            for metric in ["accuracy", "consistent_accuracy"]:
+                for deg_type in ["absolute_degradation", "relative_degradation"]:
+                    value = gen_meta_to_gen_scores[(train_algo, model_name, gen_type)][split][metric][deg_type]
+                    rows.append({
+                        "train_algo": train_algo,
+                        "model_name": model_name,
+                        "generalisation_type": gen_type,
+                        "eval_split": split,
+                        "metric": metric,
+                        "degradation_type": deg_type,
+                        "value": value
+                    })
+
+    df = pd.DataFrame(rows)
+    return df
+
+def create_generalization_plots(df, plot_dir, model_names, split_types, metrics, degradation_types, generalization_types):
+    for current_metric in metrics:
+        for current_degradation_type in degradation_types:
+            # Filter the dataframe for the current metric and degradation type.
+            filtered_df = df[(df["metric"] == current_metric) & (df["degradation_type"] == current_degradation_type)].drop(columns=["metric", "degradation_type"])
+            plot_six_block_generalisation(filtered_df, current_metric, current_degradation_type, save_path=os.path.join(plot_dir, f"generalization_{current_metric}_{current_degradation_type}.png"))
+            
 def main():
     agg_scores = read_eval_results("./eval-results")
-    create_plots(agg_scores, "./eval-plots")
+
+    model_names = ["ministral8b", "mistral24b", "llama8b"]
+    split_types = ["seen_questions_unseen_answers", "unseen_questions_unseen_answers"]
+    generalization_types = ["weak->strong", "strong->weak"]
+    metrics = ["accuracy", "consistent_accuracy"]
+    degradation_types = ["absolute_degradation", "relative_degradation"]
+
+    plot_dir = "./eval-plots/plot_type_3"
+    os.makedirs(plot_dir, exist_ok=True)
+
+    gen_meta_to_gen_scores = compute_generalization_metrics(agg_scores, split_types, metrics, degradation_types, generalization_types)
+    df = create_dataframe_for_plots(gen_meta_to_gen_scores)
+    create_generalization_plots(df, plot_dir, model_names, split_types, metrics, degradation_types, generalization_types)
+
+    # Save the dataframe as a CSV file in the plot_dir
+    df.to_csv(os.path.join(plot_dir, "dataframe.csv"), index=False)
+
+
 
 if __name__ == "__main__":
     main()
