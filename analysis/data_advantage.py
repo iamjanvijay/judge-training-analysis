@@ -138,7 +138,14 @@ def plot_six_block_advantage(df, metric_type, degradation_type, save_path=None):
 
 def compute_advantage_metrics_util(scores, eval_cap, split_types, metrics, degradation_types, advantage_types):
     """
-    example of a advantage metric:  (Acc(train=strong, eval=weak) - Acc(train=weak, eval=weak)) / (Acc(train=weak,eval=weak))
+    example of a advantage metric: 
+        weak->strong:
+            absolute degradation: Acc(train=strong, eval=weak) - Acc(train=weak, eval=weak)
+            relative degradation: (Acc(train=strong, eval=weak) - Acc(train=weak, eval=weak)) / (Acc(train=weak,eval=weak))
+        strong->weak:
+            absolute degradation: Acc(train=weak, eval=strong) - Acc(train=strong, eval=strong)
+            relative degradation: (Acc(train=weak, eval=strong) - Acc(train=strong, eval=strong)) / (Acc(train=strong,eval=strong))
+    eval_cap is fixed, train_cap is varied.
     """
     advantage_metrics = {}
     
@@ -156,7 +163,7 @@ def compute_advantage_metrics_util(scores, eval_cap, split_types, metrics, degra
                 advantage_metrics[eval_type][accuracy_type] = {}
 
             baseline = scores[train_baseline_cap][eval_type][accuracy_type] # eval-capability same as train-capability. Acc(train=weak, eval=weak)
-            comparator = scores[train_comparator_cap][eval_type][accuracy_type] # eval-capability different from train-capability. Acc(train=weak, eval=strong)
+            comparator = scores[train_comparator_cap][eval_type][accuracy_type] # eval-capability different from train-capability. Acc(train=strong, eval=weak)
             
             absolute_degradation = 100.0 * (baseline - comparator) # ideally this should be >= 0. since baseline should be >= comparator in our case.
             relative_degradation = absolute_degradation / baseline # ideally this should be >= 0 too.

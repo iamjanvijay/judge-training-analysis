@@ -138,7 +138,14 @@ def plot_six_block_generalisation(df, metric_type, degradation_type, save_path=N
 
 def compute_generalization_metrics_util(scores, train_cap, split_types, metrics, degradation_types, generalization_types):
     """
-    example of a generalization metric:  (Acc(train=weak, eval=strong) - Acc(train=weak, eval=weak)) / (Acc(train=weak,eval=weak))
+    example of a generalization metric:  
+        weak->strong:
+            absolute degradation: Acc(train=weak, eval=strong) - Acc(train=weak, eval=weak)
+            relative degradation: (Acc(train=weak, eval=strong) - Acc(train=weak, eval=weak)) / (Acc(train=weak,eval=weak))
+        strong->weak:
+            absolute degradation: Acc(train=strong, eval=weak) - Acc(train=strong, eval=strong)
+            relative degradation: (Acc(train=strong, eval=weak) - Acc(train=strong, eval=strong)) / (Acc(train=strong,eval=strong))
+    train_cap is fixed, eval_cap is varied.
     """
     generalization_metrics = {}
     
