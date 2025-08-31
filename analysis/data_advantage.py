@@ -18,8 +18,8 @@ def plot_six_block_advantage(df, metric_type, degradation_type, save_path=None):
     """
     2x3 grid of barplots.
     Y-axis labels include the direction per row:
-      - Row 0: Degradation (weak→strong)
-      - Row 1: Degradation (strong→weak)
+      - Row 0: Improvement (weak→strong)
+      - Row 1: Improvement (strong→weak)
     Legend is above the grid. Bars annotated with rounded values.
     """
 
@@ -35,7 +35,7 @@ def plot_six_block_advantage(df, metric_type, degradation_type, save_path=None):
         ("sft_dpo",  "unseen_questions_unseen_answers"),
     ]
 
-    # base colors (no explicit colors; use default cycle)
+    # base colors
     prop_cycle = plt.rcParams['axes.prop_cycle'].by_key().get('color', [])
     if len(prop_cycle) < 3:
         prop_cycle = prop_cycle + [f"C{i}" for i in range(10)]
@@ -63,14 +63,23 @@ def plot_six_block_advantage(df, metric_type, degradation_type, save_path=None):
             )
         return float(sel[0])
 
-    # global ylim across all panels for comparability
+    # global ylim across all panels for comparability (allow negatives)
     all_vals = []
     for r in row_gen:
         for c in col_models:
             for algo, split in pairs:
                 all_vals.append(_lookup_value(r, c, algo, split))
-    global_max = np.nanmax(all_vals) if len(all_vals) else 1.0
-    ylim_top = 1.2 * (global_max if np.isfinite(global_max) else 1.0)
+    if all_vals:
+        vmin = np.nanmin(all_vals)
+        vmax = np.nanmax(all_vals)
+        # expand both sides a bit for headroom
+        ylim_bottom = 1.2 * vmin if np.isfinite(vmin) else -1.0
+        ylim_top    = 1.2 * vmax if np.isfinite(vmax) else 1.0
+        # handle case where all values are >=0 or <=0
+        if vmin >= 0: ylim_bottom = 0
+        if vmax <= 0: ylim_top = 0
+    else:
+        ylim_bottom, ylim_top = -1, 1
 
     fig, axes = plt.subplots(2, 3, figsize=(13, 7), sharey=True, constrained_layout=True)
     bar_positions = np.arange(6)
@@ -89,27 +98,29 @@ def plot_six_block_advantage(df, metric_type, degradation_type, save_path=None):
                     alpha=alpha,
                     edgecolor='black', linewidth=0.6
                 )
-                # annotate value
+                # annotate value (above if positive, below if negative)
                 if not np.isnan(val) and abs(val) > 1e-3:
+                    offset = (ylim_top - ylim_bottom) * 0.015
+                    va = "bottom" if val >= 0 else "top"
                     ax.text(
-                        bar_positions[k], val + ylim_top*0.015,
+                        bar_positions[k], val + (offset if val >= 0 else -offset),
                         str(round(val, 2)),
-                        ha="center", va="bottom", fontsize=8
+                        ha="center", va=va, fontsize=8
                     )
 
-            ax.set_ylim(0, ylim_top)
+            ax.set_ylim(ylim_bottom, ylim_top)
             ax.set_xticks(bar_positions)
             ax.set_xticklabels(["sft-s","sft-u","dpo-s","dpo-u","sft_dpo-s","sft_dpo-u"],
                                fontsize=8, rotation=20)
 
-            # per-row y-axis label with direction
             if j == 0:
-                ylab = "Degradation (weak\u2192strong)" if gen == "weak->strong" else "Degradation (strong\u2192weak)"
+                ylab = "Improvement (weak→strong)" if gen == "weak->strong" else "Improvement (strong→weak)"
                 ax.set_ylabel(ylab, fontsize=9)
 
             if i == 0:
                 ax.set_title(model, fontsize=11, weight="bold")
 
+            ax.axhline(0, color="black", linewidth=0.8)  # baseline
             ax.grid(axis="y", linestyle="--", alpha=0.25)
 
     # legend above
@@ -125,8 +136,8 @@ def plot_six_block_advantage(df, metric_type, degradation_type, save_path=None):
                bbox_to_anchor=(0.5, 1.05), frameon=False, fontsize=9)
 
     fig.suptitle(
-        f"Degradation by Train Capability Shift Direction and Model\n"
-        f"Metric: {metric_type.replace('_', ' ').title()} | Degradation: {degradation_type.replace('_', ' ').title()}",
+        f"Improvement by Train Capability Shift Direction and Model\n"
+        f"Metric: {metric_type.replace('_', ' ').title()} | Improvement: {degradation_type.replace('_', ' ').title()}",
         y=1.12, fontsize=13, weight="bold"
     )
 
@@ -136,21 +147,22 @@ def plot_six_block_advantage(df, metric_type, degradation_type, save_path=None):
     else:
         plt.show()
 
+
 def compute_advantage_metrics_util(scores, eval_cap, split_types, metrics, degradation_types, advantage_types):
     """
     example of a advantage metric: 
-        weak->strong:
-            absolute degradation: Acc(train=strong, eval=weak) - Acc(train=weak, eval=weak)
-            relative degradation: (Acc(train=strong, eval=weak) - Acc(train=weak, eval=weak)) / (Acc(train=weak,eval=weak))
-        strong->weak:
-            absolute degradation: Acc(train=weak, eval=strong) - Acc(train=strong, eval=strong)
-            relative degradation: (Acc(train=weak, eval=strong) - Acc(train=strong, eval=strong)) / (Acc(train=strong,eval=strong))
+        weak->strong: when you change the training data from weak to strong, while evaluating strong, how much improvement do you get?
+            absolute improvement: Acc(train=strong, eval=strong) - Acc(train=weak, eval=strong)
+            relative improvement: (Acc(train=strong, eval=strong) - Acc(train=weak, eval=strong)) / (Acc(train=weak,eval=strong))
+        strong->weak: when you change the training data from strong to weak, while evaluating weak, how much improvement do you get?
+            absolute improvement:  Acc(train=weak, eval=weak) - Acc(train=strong, eval=weak)
+            relative improvement: (Acc(train=weak, eval=weak) - Acc(train=strong, eval=weak)) / (Acc(train=strong, eval=weak))
     eval_cap is fixed, train_cap is varied.
     """
     advantage_metrics = {}
     
-    train_baseline_cap = eval_cap
-    train_comparator_cap = "weak" if eval_cap == "strong" else "strong"
+    train_baseline_cap = "weak" if eval_cap == "strong" else "strong" 
+    train_comparator_cap = eval_cap
     advantage_type = f"{train_baseline_cap}->{train_comparator_cap}"
     assert advantage_type in advantage_types, f"Advantage type {advantage_type} not in {advantage_types}"
 
@@ -165,12 +177,12 @@ def compute_advantage_metrics_util(scores, eval_cap, split_types, metrics, degra
             baseline = scores[train_baseline_cap][eval_type][accuracy_type] # eval-capability same as train-capability. Acc(train=weak, eval=weak)
             comparator = scores[train_comparator_cap][eval_type][accuracy_type] # eval-capability different from train-capability. Acc(train=strong, eval=weak)
             
-            absolute_degradation = 100.0 * (baseline - comparator) # ideally this should be >= 0. since baseline should be >= comparator in our case.
-            relative_degradation = absolute_degradation / baseline # ideally this should be >= 0 too.
+            absolute_improvement = 100.0 * (comparator - baseline) # ideally this should be >= 0. since baseline should be >= comparator in our case.
+            relative_improvement = absolute_improvement / baseline # ideally this should be >= 0 too.
 
             advantage_metrics[eval_type][accuracy_type] = {
-                "absolute_degradation": absolute_degradation,
-                "relative_degradation": relative_degradation
+                "absolute_improvement": absolute_improvement,
+                "relative_improvement": relative_improvement
             }
             for degradation_type in advantage_metrics[eval_type][accuracy_type]:
                 assert degradation_type in degradation_types, f"Degradation type {degradation_type} not in {degradation_types}"
@@ -220,7 +232,7 @@ def create_dataframe_for_plots(gen_meta_to_gen_scores):
     for (train_algo, model_name, gen_type) in gen_meta_to_gen_scores:
         for split in ["seen_questions_unseen_answers", "unseen_questions_unseen_answers"]:
             for metric in ["accuracy", "consistent_accuracy"]:
-                for deg_type in ["absolute_degradation", "relative_degradation"]:
+                for deg_type in ["absolute_improvement", "relative_improvement"]:
                     value = gen_meta_to_gen_scores[(train_algo, model_name, gen_type)][split][metric][deg_type]
                     rows.append({
                         "train_algo": train_algo,
@@ -249,7 +261,7 @@ def main():
     split_types = ["seen_questions_unseen_answers", "unseen_questions_unseen_answers"]
     advantage_types = ["weak->strong", "strong->weak"]
     metrics = ["accuracy", "consistent_accuracy"]
-    degradation_types = ["absolute_degradation", "relative_degradation"]
+    degradation_types = ["absolute_improvement", "relative_improvement"]
 
     plot_dir = "./eval-plots/plot_type_4"
     os.makedirs(plot_dir, exist_ok=True)
