@@ -197,8 +197,8 @@ trainer:
   n_gpus_per_node: 8
   save_freq: 8 # [CHANGED]
   # auto: find the last ckpt to resume. If can't find, start from scratch
-  resume_mode: resume_path # or auto or resume_path if
-  resume_from_path: ${base_dir}/train-output-dir/checkpoints/${trainer.project_name}/${trainer.experiment_name}/global_step_64
+  resume_mode: auto # or auto or resume_path if
+  resume_from_path: False
   test_freq: 8 # [CHANGED]
   critic_warmup: 0
   default_hdfs_dir: null
