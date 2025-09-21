@@ -1,5 +1,3 @@
-# python convert_fsdp_to_hf.py /jvsingh2/sf-intern/grpo-setup/train/checkpoints/judge-grpo/qwen2.5-1.5b.math500.grpo/global_step_440/actor /jvsingh2/sf-intern/grpo-setup/train/checkpoints/judge-grpo/qwen2.5-1.5b.math500.grpo/global_step_440/actor/huggingface /jvsingh2/sf-intern/grpo-setup/train/checkpoints/judge-grpo/qwen2.5-1.5b.math500.grpo/converted_ckpts/global_step_440
-
 # Sample command to run this script:
 # CUDA_VISIBLE_DEVICES=-1 python train/utils/verl_to_hf_ckpt_format.py \
 #     --verl_ckpt_dir /shared/storage-01/users/jvsingh2/sf-intern/github/judge-training-analysis/train-output-dir/checkpoints/judge-generalisation/set_1_unflipped_weak.ministral8b.deepscaler_const_1e-6 \
@@ -123,6 +121,9 @@ def get_params_for_convert_verl_to_hf(args):
         d for d in os.listdir(verl_ckpt_parent_dir) 
         if os.path.isdir(os.path.join(verl_ckpt_parent_dir, d)) and "global_step_" in d
     ]
+    
+    # Sort by step number in descending order (highest step first)
+    verl_ckpt_dirs.sort(key=lambda x: int(x[len("global_step_"):]), reverse=True)
     
     print(f"Found {len(verl_ckpt_dirs)} VERL checkpoint directories in {verl_ckpt_parent_dir}")
     print(f"Checkpoint directories: {verl_ckpt_dirs}")

@@ -15,8 +15,8 @@ data:
   train_files: ${base_dir}/sf-judge-data/formatted_data_splits/train/grpo_unflipped_set_2_strong_no_ques_wise_answers_one_train.parquet # [CHANGED]
   val_files: ${base_dir}/sf-judge-data/formatted_data_splits/train/grpo_flipped_set_2_strong_no_ques_wise_answers_one_eval.parquet # [CHANGED]
   prompt_key: prompt # [CHANGED]
-  max_prompt_length: 3072 # [CHANGED]
-  max_response_length: 3072 # [CHANGED]
+  max_prompt_length: 4096 # [CHANGED]
+  max_response_length: 4096 # [CHANGED]
   train_batch_size: 1024 # [CHANGED]
   val_batch_size: null # DEPRECATED: Validation datasets are sent to inference engines as a whole batch, which will schedule the memory themselves
   return_raw_input_ids: False  # This should be set to true when the tokenizer between policy and rm differs
@@ -79,9 +79,9 @@ actor_rollout_ref:
     ulysses_sequence_parallel_size: ${actor_rollout_ref.actor.ulysses_sequence_parallel_size} # sp size
   rollout:
     name: vllm
-    temperature: 1.0
+    temperature: 0.9
     top_k: -1 # 0 for hf rollout, -1 for vllm rollout
-    top_p: 1
+    top_p: 0.95
     use_fire_sampling: False # https://arxiv.org/abs/2410.21236
     prompt_length: ${data.max_prompt_length}  # not use for opensource
     response_length: ${data.max_response_length}
@@ -93,7 +93,7 @@ actor_rollout_ref:
     free_cache_engine: False
     load_format: dummy_dtensor
     tensor_model_parallel_size: 1
-    max_num_batched_tokens: 6144 # [CHANGED] # this is set to MAX_NUM_BATCHED_TOKENS=$(($MAX_PROMPT_LENGTH + $MAX_RESPONSE_LENGTH)) in RM-R1
+    max_num_batched_tokens: 8192 # [CHANGED] # this is set to MAX_NUM_BATCHED_TOKENS=$(($MAX_PROMPT_LENGTH + $MAX_RESPONSE_LENGTH)) in RM-R1
     max_model_len: null
     max_num_seqs: 1024
     log_prob_micro_batch_size: null # will be deprecated, use log_prob_micro_batch_size_per_gpu
@@ -186,7 +186,7 @@ algorithm:
 
 trainer:
   balance_batch: True
-  val_before_train: False
+  val_before_train: True
   total_epochs: 2 # [CHANGED]
   total_training_steps: null
   project_name: judge-generalisation
@@ -199,7 +199,7 @@ trainer:
   # auto: find the last ckpt to resume. If can't find, start from scratch
   resume_mode: auto # or auto or resume_path if
   resume_from_path: False
-  test_freq: 80 # [CHANGED]
+  test_freq: 20 # [CHANGED]
   critic_warmup: 0
   default_hdfs_dir: null
   remove_previous_ckpt_in_save: False

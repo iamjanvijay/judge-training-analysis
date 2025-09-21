@@ -1,68 +1,80 @@
-from json_repair import repair_json
+# from json_repair import repair_json
 
-def check_text_for_verdict_a(text):
-    """Return True if text contains a correctly formatted verdict A."""
-    return '{"verdict": "A"}' in text
+# def check_text_for_verdict_a(text):
+#     """Return True if text contains a correctly formatted verdict A."""
+#     return '{"verdict": "A"}' in text
 
-def check_text_for_verdict_b(text):
-    """Return True if text contains a correctly formatted verdict B."""
-    return '{"verdict": "B"}' in text
+# def check_text_for_verdict_b(text):
+#     """Return True if text contains a correctly formatted verdict B."""
+#     return '{"verdict": "B"}' in text
 
-def extract_json_from_codeblock(text):
-    """Extract JSON content from a code block if present."""
-    if '```json' in text:
-        return '```json' + text.split('```json', 1)[1]
-    return text
+# def extract_json_from_codeblock(text):
+#     """Extract JSON content from a code block if present."""
+#     if '```json' in text:
+#         return '```json' + text.split('```json', 1)[1]
+#     return text
 
-def process_label_dict(label_dict):
-    """
-    Process the label dictionary to extract a valid verdict.
-    If the result is an empty list, return 'C'.
-    If the result is a list, try to find a dict with a valid verdict.
-    """
-    if isinstance(label_dict, list):
-        if not label_dict:
-            return 'C'
-        for item in reversed(label_dict):
-            if isinstance(item, dict) and item.get("verdict") in ['A', 'B']:
-                return item
-        return label_dict[-1]
-    return label_dict
+# def process_label_dict(label_dict):
+#     """
+#     Process the label dictionary to extract a valid verdict.
+#     If the result is an empty list, return 'C'.
+#     If the result is a list, try to find a dict with a valid verdict.
+#     """
+#     if isinstance(label_dict, list):
+#         if not label_dict:
+#             return 'C'
+#         for item in reversed(label_dict):
+#             if isinstance(item, dict) and item.get("verdict") in ['A', 'B']:
+#                 return item
+#         return label_dict[-1]
+#     return label_dict
 
-def validate_verdict_dict(label_dict):
-    """Return True if label_dict is a dict with a valid verdict ('A' or 'B')."""
-    return (
-        isinstance(label_dict, dict)
-        and label_dict.get("verdict") in ['A', 'B']
-    )
+# def validate_verdict_dict(label_dict):
+#     """Return True if label_dict is a dict with a valid verdict ('A' or 'B')."""
+#     return (
+#         isinstance(label_dict, dict)
+#         and label_dict.get("verdict") in ['A', 'B']
+#     )
 
-def extract_verdict_from_dict(label_dict):
-    """Extract the verdict value from a validated label_dict."""
-    return label_dict["verdict"]
+# def extract_verdict_from_dict(label_dict):
+#     """Extract the verdict value from a validated label_dict."""
+#     return label_dict["verdict"]
+
+# def get_label(response):
+#     """
+#     Attempt to extract the verdict label from the response.
+#     Returns 'A', 'B', or 'C' (cannot parse).
+#     """
+#     response = response[-2000:] # only consider the last 2000 characters of the response.
+#     text = extract_json_from_codeblock(response)
+
+#     try:
+#         label_dict = repair_json(text, return_objects=True)
+#         label_dict = process_label_dict(label_dict)
+#     except Exception as e:
+#         # Catch RecursionError, ValueError, etc.
+#         print(f"[DEBUG] repair_json failed: {e}")
+#         return 'C'
+
+#     if not validate_verdict_dict(label_dict):
+#         if check_text_for_verdict_a(text):
+#             return 'A'
+#         if check_text_for_verdict_b(text):
+#             return 'B'
+#         return 'C'
+#     return extract_verdict_from_dict(label_dict)
+
 
 def get_label(response):
-    """
-    Attempt to extract the verdict label from the response.
-    Returns 'A', 'B', or 'C' (cannot parse).
-    """
-    response = response[-2000:] # only consider the last 2000 characters of the response.
-    text = extract_json_from_codeblock(response)
-
-    try:
-        label_dict = repair_json(text, return_objects=True)
-        label_dict = process_label_dict(label_dict)
-    except Exception as e:
-        # Catch RecursionError, ValueError, etc.
-        print(f"[DEBUG] repair_json failed: {e}")
-        return 'C'
-
-    if not validate_verdict_dict(label_dict):
-        if check_text_for_verdict_a(text):
-            return 'A'
-        if check_text_for_verdict_b(text):
-            return 'B'
-        return 'C'
-    return extract_verdict_from_dict(label_dict)
+    if response.count("[A>B]") + response.count("[B>A]") > 1:
+        predicted_label = "C"
+    elif response.endswith("[A>B]"):
+        predicted_label = "A"
+    elif response.endswith("[B>A]"):
+        predicted_label = "B"
+    else:
+        predicted_label = "C"
+    return predicted_label
 
 def compute_reward(
     data_source: str,

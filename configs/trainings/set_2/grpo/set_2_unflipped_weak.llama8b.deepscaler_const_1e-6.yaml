@@ -79,9 +79,9 @@ actor_rollout_ref:
     ulysses_sequence_parallel_size: ${actor_rollout_ref.actor.ulysses_sequence_parallel_size} # sp size
   rollout:
     name: vllm
-    temperature: 1.0
+    temperature: 0.9
     top_k: -1 # 0 for hf rollout, -1 for vllm rollout
-    top_p: 1
+    top_p: 0.95
     use_fire_sampling: False # https://arxiv.org/abs/2410.21236
     prompt_length: ${data.max_prompt_length}  # not use for opensource
     response_length: ${data.max_response_length}
@@ -186,7 +186,7 @@ algorithm:
 
 trainer:
   balance_batch: True
-  val_before_train: False
+  val_before_train: True
   total_epochs: 2 # [CHANGED]
   total_training_steps: null
   project_name: judge-generalisation
@@ -199,7 +199,7 @@ trainer:
   # auto: find the last ckpt to resume. If can't find, start from scratch
   resume_mode: auto # or auto or resume_path if
   resume_from_path: False
-  test_freq: 80 # [CHANGED]
+  test_freq: 20 # [CHANGED]
   critic_warmup: 0
   default_hdfs_dir: null
   remove_previous_ckpt_in_save: False
