@@ -709,21 +709,29 @@ code {
   }
   
   .more-works-container {
-    bottom: 2rem;
-    right: 1rem;
-    top: auto;
+    top: max(0.75rem, env(safe-area-inset-top, 0px));
+    right: max(0.75rem, env(safe-area-inset-right, 0px));
+    bottom: auto;
+    left: auto;
   }
-  
+
   .more-works-btn {
     padding: 0.6rem 1rem;
     font-size: 0.8rem;
   }
-  
+
   .more-works-dropdown {
-    width: calc(100vw - 2rem);
-    right: -1rem;
-    bottom: calc(100% + 0.5rem);
-    top: auto;
+    top: calc(100% + 0.5rem);
+    bottom: auto;
+    right: 0;
+    left: auto;
+    width: min(42rem, calc(100vw - 1.5rem));
+    max-width: calc(100vw - 1rem);
+  }
+
+  .scroll-to-top {
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    right: max(1rem, env(safe-area-inset-right, 0px));
   }
   
   .results-carousel .item {
@@ -756,22 +764,31 @@ code {
   
   .more-works-container {
     position: fixed;
-    bottom: 2rem;
-    right: 1rem;
+    top: max(0.65rem, env(safe-area-inset-top, 0px));
+    right: max(0.65rem, env(safe-area-inset-right, 0px));
+    bottom: auto;
+    left: auto;
     z-index: 1000;
   }
-  
+
   .more-works-btn {
     padding: 0.5rem 0.75rem;
     font-size: 0.75rem;
   }
-  
+
   .more-works-dropdown {
     position: absolute;
-    bottom: calc(100% + 0.5rem);
+    top: calc(100% + 0.5rem);
+    bottom: auto;
     right: 0;
-    width: calc(100vw - 2rem);
-    max-width: 90vw;
+    left: auto;
+    width: min(42rem, calc(100vw - 1.25rem));
+    max-width: calc(100vw - 1rem);
+  }
+
+  .scroll-to-top {
+    bottom: max(0.85rem, env(safe-area-inset-bottom, 0px));
+    right: max(0.85rem, env(safe-area-inset-right, 0px));
   }
   
   .link-block {
