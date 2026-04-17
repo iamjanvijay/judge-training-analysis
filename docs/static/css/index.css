@@ -99,15 +99,19 @@ body {
   border-bottom: 1px solid var(--border-color);
 }
 
-/* Striped panels: explicit white band so carousel reads apart from gray BibTeX below */
-.paper-figures-carousel.hero {
+/* Alternating main panels (only top border between bands — avoids doubled lines) */
+.paper-strip--light {
   background: var(--background-primary);
+  border-top: 1px solid var(--border-color);
 }
 
-.paper-bibtex-section {
+.paper-strip--muted {
   background: var(--background-secondary);
   border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
+}
+
+main#main-content > section.paper-strip--light:first-of-type {
+  border-top: none;
 }
 
 .hero-body {
