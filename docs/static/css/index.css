@@ -122,6 +122,29 @@ body {
     line-height: 1.1 !important;
 }
 
+/* Main paper figure (Fig. 1) */
+.paper-figure-section .paper-figure {
+  margin: 0 auto;
+  max-width: 52rem;
+}
+
+.paper-figure-section .paper-figure-media {
+  background: #fff;
+  border-radius: 12px;
+  padding: clamp(0.5rem, 2vw, 1rem) clamp(0.65rem, 2.5vw, 1.25rem);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 28px rgba(15, 23, 42, 0.08);
+}
+
+.paper-figure-section .paper-figure-media img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+}
+
 /* Paper-style figure caption (serif, justified) */
 .paper-figure-caption {
   font-family: Georgia, "Times New Roman", Times, serif;
@@ -130,8 +153,9 @@ body {
   text-align: justify;
   text-justify: inter-word;
   hyphens: auto;
-  max-width: 40rem;
-  margin: 1.25rem auto 0;
+  max-width: 52rem;
+  margin: 1.1rem auto 0;
+  padding: 0 clamp(0.25rem, 2vw, 0.5rem);
   color: var(--text-primary);
 }
 
