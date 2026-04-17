@@ -99,14 +99,16 @@ body {
   border-bottom: 1px solid var(--border-color);
 }
 
-/* Alternating main panels (only top border between bands — avoids doubled lines) */
-.paper-strip--light {
-  background: var(--background-primary);
+/* Alternating panels: explicit colors + !important so nothing (Bulma, order, etc.) clears them */
+section.paper-strip--light,
+.hero.paper-strip--light {
+  background-color: var(--background-primary) !important;
   border-top: 1px solid var(--border-color);
 }
 
-.paper-strip--muted {
-  background: var(--background-secondary);
+section.paper-strip--muted,
+.hero.paper-strip--muted {
+  background-color: var(--background-secondary) !important;
   border-top: 1px solid var(--border-color);
 }
 
