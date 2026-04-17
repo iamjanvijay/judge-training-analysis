@@ -388,98 +388,109 @@
         <div class="item">
           <img
             src="static/images/figure-2.png"
-            alt="Figure 2: Future-proofing and RefreshAdvantage across models and training recipes"
+            alt="Figure 2: Generator strength clusters on DeepScaleR pass@1"
             width="1200"
             height="800"
             loading="lazy"
             decoding="async"
           />
           <p class="paper-carousel-caption">
-            (a) Future-proofing measured by FutureProof; negative values show
-            degraded performance on stronger responses. All models and recipes degrade, indicating poor
-            evaluation of newer, stronger responses. (b) Benefits of re-training on strong responses,
-            measured by RefreshAdvantage. Re-training consistently improves performance, with the largest
-            gains under DPO.
+            <strong>Figure 2:</strong> Generator strength on the DeepScaleR dataset, measured using pass@1
+            with 20 independently sampled responses. Models fall into two well-separated strength clusters:
+            weak (0.17–0.26) and strong (0.42–0.50). No models occupy the 0.26–0.42 gap (a 0.16-wide gap),
+            making the clustering robust to any threshold chosen within this interval. This clustering also
+            aligns with model release dates, with stronger, newer models (yellow) outperforming weaker,
+            older ones (green).
           </p>
         </div>
         <div class="item">
           <img
             src="static/images/figure-3.png"
-            alt="Figure 3: Backward-compatibility and compatibility shift vs future-proofing"
+            alt="Figure 3: Future-proofing FutureProof and RefreshAdvantage for DeepScaler-trained judges"
             width="1200"
             height="800"
             loading="lazy"
             decoding="async"
           />
           <p class="paper-carousel-caption">
-            (a) BackCompatibility of judges trained on strong responses when
-            evaluating older responses; positive values indicate gains vs. older-judge baselines. (b)
-            CompatibilityShift: newer judges still drop when moving from strong to weak response
-            evaluation. (c) Backward-compatibility metrics are smaller in magnitude than future-proofing
-            metrics in Figure 2, so strong-response-trained judges are more backward-compatible than
-            weak-response-trained judges are future-proof.
+            <strong>Figure 3:</strong> Future-Proofing of DeepScaler-Trained Judges. (a) Future-proofing
+            measured by FutureProof; negative values show degraded performance on stronger responses. All
+            models and recipes show performance degradation, indicating poor evaluation of newer, stronger
+            responses. (b) Benefits of re-training on strong responses, measured by RefreshAdvantage.
+            Re-training consistently improves performance, with the largest gains under DPO.
           </p>
         </div>
         <div class="item">
           <img
             src="static/images/figure-4.png"
-            alt="Figure 4: Continual training vs weak-trained judge on future-proofing metrics"
+            alt="Figure 4: Backward-compatibility BackCompatibility and CompatibilityShift for DeepScaler-trained judges"
             width="1200"
             height="800"
             loading="lazy"
             decoding="async"
           />
           <p class="paper-carousel-caption">
-            Changes in future-proofing metrics when replacing a
-            weak-response-trained judge (solid) with a continually trained judge (dashed). RefreshAdvantage
-            decreases and FutureProof increases toward zero for some models, so continual training adapts
-            better to weak-to-strong response shifts than keeping the weak judge alone.
+            <strong>Figure 4:</strong> Backward-Compatibility of DeepScaler-Trained Judges. (a)
+            BackCompatibility of judges trained on strong responses when evaluating older responses;
+            positive values indicate improved performance relative to older-judge baselines. Judges trained
+            on newer responses show good BackCompatibility, with minimal drops—or even absolute gains. (b)
+            Despite strong absolute performance, newer judges still face a distribution shift, reflected by
+            CompatibilityShift, with performance drops relative to evaluating strong responses. (c)
+            Compared with future-proofing metrics in Figure 3, backward-compatibility metrics are smaller,
+            indicating that strong-response–trained judges are more backward-compatible than
+            weak-response–trained judges are future-proof.
           </p>
         </div>
         <div class="item">
           <img
             src="static/images/figure-5.png"
-            alt="Figure 5: Continual training vs strong-trained judge on backward-compatibility metrics"
+            alt="Figure 5: Future-proofing metrics when replacing a weak judge with a continually trained judge"
             width="1200"
             height="800"
             loading="lazy"
             decoding="async"
           />
           <p class="paper-carousel-caption">
-            Changes in backward-compatibility metrics when replacing a
-            strong-response-trained judge (solid) with a continually trained judge (dashed). BackCompat
-            rises for some models and CompatibilityShift increases, so continual training can preserve
-            backward compatibility while adapting to strong-to-weak shifts.
+            <strong>Figure 5:</strong> Changes in future-proofing metrics when replacing a
+            weak-response-trained judge (solid) with a continually trained judge (dashed). We observe a
+            decrease in RefreshAdvantage and an increase in FutureProof, with values approaching zero for a
+            couple of models. This suggests that continual training enables judges to evaluate strong
+            responses more effectively than weak-trained judges, as well as strong-trained judges, and
+            adapts better to the weak-to-strong response shift.
           </p>
         </div>
         <div class="item">
           <img
             src="static/images/figure-6.png"
-            alt="Figure 6: Question generalization for judges trained on weak vs strong responses"
+            alt="Figure 6: Backward-compatibility metrics when replacing a strong judge with a continually trained judge"
             width="1200"
             height="800"
             loading="lazy"
             decoding="async"
           />
           <p class="paper-carousel-caption">
-            Generalization of judges trained on weak vs. strong responses to
-            seen and unseen questions. Judges typically fail on unseen questions, with large drops
-            relative to evaluating unseen responses on seen questions.
+            <strong>Figure 6:</strong> Changes in backward-compatibility metrics when replacing a
+            strong-response-trained judge (solid) with a continually-trained judge (dashed). We see an
+            increase in BackCompat for a couple of models, suggesting that continual training can help
+            models better evaluate weak responses than purely strong-trained judges. We also observe an
+            increase in CompatShift, showing that continually trained judges adapt better to the
+            strong-to-weak response shift.
           </p>
         </div>
         <div class="item">
           <img
             src="static/images/figure-7.png"
-            alt="Figure 7: Generator strength on DeepScaleR measured by pass@1"
+            alt="Figure 7: Question generalization of DeepScaler-trained judges on seen vs unseen questions"
             width="1200"
             height="800"
             loading="lazy"
             decoding="async"
           />
           <p class="paper-carousel-caption">
-            Generator strength on the DeepScaleR dataset, measured using pass@1
-            with 2020 independently sampled responses. Stronger, newer models (yellow) cluster above weaker,
-            older ones (green).
+            <strong>Figure 7:</strong> Question Generalization of DeepScaler-Trained Judges. Generalization
+            of judges trained on weak vs. strong responses to seen and unseen questions. Judges typically
+            fail to generalize to unseen questions, showing large performance drops relative to evaluating
+            unseen responses on seen questions.
           </p>
         </div>
       </div>
@@ -498,12 +509,18 @@
       <h2 id="poster-heading" class="title">Poster</h2>
       <div class="paper-poster-shell">
         <div class="paper-poster-frame">
-          <iframe
-            class="paper-poster-iframe"
-            src="static/pdfs/shelf-life-final.pdf#page=1"
+          <!-- #view=Fit: fit whole page in the viewer (Chromium iframe PDF often defaults to ~100% zoom). -->
+          <embed
+            class="paper-poster-embed"
+            src="static/pdfs/shelf-life-final.pdf#page=1&amp;view=Fit&amp;toolbar=0&amp;navpanes=0"
+            type="application/pdf"
             title="ICLR poster (PDF)"
-          ></iframe>
+          />
         </div>
+        <p class="paper-poster-fallback">
+          <a href="static/pdfs/shelf-life-final.pdf" target="_blank" rel="noopener noreferrer">Open poster PDF in a new tab</a>
+          if the preview does not scale correctly in your browser.
+        </p>
       </div>
     </div>
   </div>
