@@ -377,43 +377,116 @@
 <!-- End paper abstract -->
 
 
-<!-- Image carousel -->
-<section class="hero is-small">
+<!-- Figures 2–7 carousel -->
+<section class="hero is-small paper-figures-carousel" aria-labelledby="figures-carousel-heading">
   <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-       <div class="item">
-        <img src="static/images/carousel2.jpg" alt="Additional result figure (placeholder)" loading="lazy"/>
-        <h2 class="subtitle has-text-centered">
-          Additional results (replace with your own figures).
-        </h2>
-      </div>
-      <div class="item">
-        <!-- Your image here -->
-        <img src="static/images/carousel2.jpg" alt="Second research result visualization" loading="lazy"/>
-        <h2 class="subtitle has-text-centered">
-          Second image description.
-        </h2>
-      </div>
-      <div class="item">
-        <!-- Your image here -->
-        <img src="static/images/carousel3.jpg" alt="Third research result visualization" loading="lazy"/>
-        <h2 class="subtitle has-text-centered">
-         Third image description.
-       </h2>
-     </div>
-     <div class="item">
-      <!-- Your image here -->
-      <img src="static/images/carousel4.jpg" alt="Fourth research result visualization" loading="lazy"/>
-      <h2 class="subtitle has-text-centered">
-        Fourth image description.
+    <div class="container is-max-widescreen">
+      <h2 id="figures-carousel-heading" class="title is-4 has-text-centered" style="margin-bottom: 1.25rem">
+        Figures 2&ndash;7
       </h2>
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item">
+          <img
+            src="static/images/figure-2.png"
+            alt="Figure 2: Future-proofing and RefreshAdvantage across models and training recipes"
+            width="1200"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
+          <p class="paper-carousel-caption">
+            <strong>Figure 2:</strong> (a) Future-proofing measured by FutureProof; negative values show
+            degraded performance on stronger responses. All models and recipes degrade, indicating poor
+            evaluation of newer, stronger responses. (b) Benefits of re-training on strong responses,
+            measured by RefreshAdvantage. Re-training consistently improves performance, with the largest
+            gains under DPO.
+          </p>
+        </div>
+        <div class="item">
+          <img
+            src="static/images/figure-3.png"
+            alt="Figure 3: Backward-compatibility and compatibility shift vs future-proofing"
+            width="1200"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
+          <p class="paper-carousel-caption">
+            <strong>Figure 3:</strong> (a) BackCompatibility of judges trained on strong responses when
+            evaluating older responses; positive values indicate gains vs. older-judge baselines. (b)
+            CompatibilityShift: newer judges still drop when moving from strong to weak response
+            evaluation. (c) Backward-compatibility metrics are smaller in magnitude than future-proofing
+            metrics in Figure 2, so strong-response-trained judges are more backward-compatible than
+            weak-response-trained judges are future-proof.
+          </p>
+        </div>
+        <div class="item">
+          <img
+            src="static/images/figure-4.png"
+            alt="Figure 4: Continual training vs weak-trained judge on future-proofing metrics"
+            width="1200"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
+          <p class="paper-carousel-caption">
+            <strong>Figure 4:</strong> Changes in future-proofing metrics when replacing a
+            weak-response-trained judge (solid) with a continually trained judge (dashed). RefreshAdvantage
+            decreases and FutureProof increases toward zero for some models, so continual training adapts
+            better to weak-to-strong response shifts than keeping the weak judge alone.
+          </p>
+        </div>
+        <div class="item">
+          <img
+            src="static/images/figure-5.png"
+            alt="Figure 5: Continual training vs strong-trained judge on backward-compatibility metrics"
+            width="1200"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
+          <p class="paper-carousel-caption">
+            <strong>Figure 5:</strong> Changes in backward-compatibility metrics when replacing a
+            strong-response-trained judge (solid) with a continually trained judge (dashed). BackCompat
+            rises for some models and CompatibilityShift increases, so continual training can preserve
+            backward compatibility while adapting to strong-to-weak shifts.
+          </p>
+        </div>
+        <div class="item">
+          <img
+            src="static/images/figure-6.png"
+            alt="Figure 6: Question generalization for judges trained on weak vs strong responses"
+            width="1200"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
+          <p class="paper-carousel-caption">
+            <strong>Figure 6:</strong> Generalization of judges trained on weak vs. strong responses to
+            seen and unseen questions. Judges typically fail on unseen questions, with large drops
+            relative to evaluating unseen responses on seen questions.
+          </p>
+        </div>
+        <div class="item">
+          <img
+            src="static/images/figure-7.png"
+            alt="Figure 7: Generator strength on DeepScaleR measured by pass@1"
+            width="1200"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
+          <p class="paper-carousel-caption">
+            <strong>Figure 7:</strong> Generator strength on the DeepScaleR dataset, measured using pass@1
+            with 2020 independently sampled responses. Stronger, newer models (yellow) cluster above weaker,
+            older ones (green).
+          </p>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-</div>
 </section>
-<!-- End image carousel -->
+<!-- End figures carousel -->
 
 
 

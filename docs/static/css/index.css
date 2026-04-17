@@ -335,6 +335,22 @@ body {
   font-weight: 500;
 }
 
+.paper-carousel-caption {
+  display: block;
+  max-width: 44rem;
+  margin: 1rem auto 0;
+  padding: 0 0.25rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  text-wrap: pretty;
+  white-space: normal;
+}
+
 /* Pagination and Misc Improvements */
 .slider-pagination .slider-page {
   background: var(--primary-color);
@@ -750,6 +766,11 @@ code {
   .paper-abstract .paper-abstract-body {
     font-size: 1rem;
     line-height: 1.65;
+  }
+
+  .paper-carousel-caption {
+    font-size: 0.85rem;
+    line-height: 1.42;
   }
 }
 
