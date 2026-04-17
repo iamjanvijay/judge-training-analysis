@@ -338,12 +338,12 @@
 <!-- End main figure -->
 
 <!-- Paper abstract -->
-<section class="section hero is-light">
-  <div class="container is-max-desktop">
+<section class="section hero is-light paper-abstract" id="abstract">
+  <div class="container is-max-widescreen">
     <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
+      <div class="column is-11-tablet is-10-desktop is-9-widescreen">
         <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
+        <div class="content has-text-justified paper-abstract-body">
           <p>
             The LLM-as-a-judge paradigm is widely used in both evaluating free-text model
             responses and reward modeling for model alignment and finetuning. Recently,
@@ -352,9 +352,9 @@
             robust to common biases. However, the standard evaluation ignores several practical
             concerns of finetuned judges regarding their real world deployment. In this paper,
             we identify and formalize three aspects that affect the <em>shelf life</em> of these
-            judges: <em>future-proofing</em> and <em>backward-compatibility</em> &mdash; how well
+            judges: <em>future-proofing</em> and <em>backward-compatibility</em>, how well
             judges finetuned on responses by today&apos;s generator models perform on responses
-            by future models or past models, as well as <em>question generalization</em> &mdash;
+            by future models or past models, as well as <em>question generalization</em>,
             how well judges generalize to unseen questions at test time. We study these three
             aspects under a unified framework with varying train and test distributions in two
             reasoning datasets, three SFT- and DPO-based fine-tuning algorithms, and three
