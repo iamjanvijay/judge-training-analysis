@@ -122,6 +122,27 @@ body {
     line-height: 1.1 !important;
 }
 
+/* Paper-style figure caption (serif, justified) */
+.paper-figure-caption {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 0.95rem;
+  line-height: 1.38;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  max-width: 40rem;
+  margin: 1.25rem auto 0;
+  color: var(--text-primary);
+}
+
+.paper-figure-caption strong {
+  font-weight: 700;
+}
+
+.paper-figure-caption em {
+  font-style: italic;
+}
+
 .publication-banner {
   max-height: 70vh;
   border-radius: var(--border-radius-lg);
