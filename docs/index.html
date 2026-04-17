@@ -21,10 +21,10 @@
   <meta property="og:title" content="On the Shelf Life of Fine-Tuned LLM Judges">
   <meta property="og:description" content="We study future proofing, backward compatibility, and question generalization of fine-tuned LLM judges across shifting generators and held-out questions.">
   <meta property="og:url" content="https://iamjanvijay.github.io/judge-training-analysis/">
-  <meta property="og:image" content="https://iamjanvijay.github.io/judge-training-analysis/static/images/carousel1.jpg">
+  <meta property="og:image" content="https://iamjanvijay.github.io/judge-training-analysis/static/images/judge_generalization_fig1.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="On the Shelf Life of Fine-Tuned LLM Judges — research preview">
+  <meta property="og:image:alt" content="Figure 1: Future-proofing, backward-compatibility, and question generalization overview">
   <meta property="article:published_time" content="2026-04-01T00:00:00.000Z">
   <meta property="article:author" content="Janvijay Singh">
   <meta property="article:section" content="Research">
@@ -38,8 +38,8 @@
   <meta name="twitter:creator" content="@iamjanvijay">
   <meta name="twitter:title" content="On the Shelf Life of Fine-Tuned LLM Judges">
   <meta name="twitter:description" content="We study future proofing, backward compatibility, and question generalization of fine-tuned LLM judges across shifting generators and held-out questions.">
-  <meta name="twitter:image" content="https://iamjanvijay.github.io/judge-training-analysis/static/images/carousel1.jpg">
-  <meta name="twitter:image:alt" content="On the Shelf Life of Fine-Tuned LLM Judges — research preview">
+  <meta name="twitter:image" content="https://iamjanvijay.github.io/judge-training-analysis/static/images/judge_generalization_fig1.png">
+  <meta name="twitter:image:alt" content="Figure 1: Future-proofing, backward-compatibility, and question generalization overview">
 
   <!-- Academic/Research Specific -->
   <meta name="citation_title" content="On the Shelf Life of Fine-Tuned LLM Judges: Future Proofing, Backward Compatibility, and Question Generalization">
@@ -120,7 +120,7 @@
     "datePublished": "2026-04-01",
     "publisher": {"@type": "Organization", "name": "ICLR"},
     "url": "https://iamjanvijay.github.io/judge-training-analysis/",
-    "image": "https://iamjanvijay.github.io/judge-training-analysis/static/images/carousel1.jpg",
+    "image": "https://iamjanvijay.github.io/judge-training-analysis/static/images/judge_generalization_fig1.png",
     "keywords": ["LLM-as-a-judge", "fine-tuning", "DPO", "SFT", "distribution shift", "evaluation"],
     "isAccessibleForFree": true,
     "license": "https://creativecommons.org/licenses/by/4.0/",
@@ -313,25 +313,55 @@
   </section>
 
 
-<!-- Teaser video-->
-<section class="hero teaser">
-  <div class="container is-max-desktop">
+<!-- Main figure (paper Fig. 1) -->
+<section class="hero is-light" id="fig-overview" aria-labelledby="fig-overview-caption">
+  <div class="container is-max-widescreen">
     <div class="hero-body">
-      <!-- TODO: Replace with your teaser video -->
-      <video poster="" id="tree" autoplay controls muted loop height="100%" preload="metadata">
-        <!-- TODO: Add your video file path here -->
-        <source src="static/videos/banner_video.mp4" type="video/mp4">
-      </video>
-      <!-- TODO: Replace with your video description -->
-      <h2 class="subtitle has-text-centered">
-        We formalize <em>future proofing</em>, <em>backward compatibility</em>, and
-        <em>question generalization</em> for fine-tuned LLM judges and study them across
-        training algorithms and backbone models (template teaser video; replace with your own clip).
-      </h2>
+      <figure class="content" style="margin: 0 auto">
+        <a
+          href="static/pdfs/judge-generalization-fig1.pdf"
+          target="_blank"
+          rel="noopener"
+          title="Open figure PDF"
+        >
+          <img
+            src="static/images/judge_generalization_fig1.png"
+            alt="Overview of future-proofing, backward-compatibility, and question generalization with Gemma2, Qwen2, Gemma3, and Qwen2.5 generators"
+            width="960"
+            height="491"
+            style="max-width: 80%; width: 100%; height: auto; display: block; margin: 0 auto"
+            loading="eager"
+            decoding="async"
+          />
+        </a>
+        <figcaption
+          id="fig-overview-caption"
+          class="has-text-justified is-size-6"
+          style="margin: 1.25rem auto 0; max-width: 48rem"
+        >
+          <strong>Figure 1.</strong> High-level overview of our setup for studying
+          <em>Future-Proofing</em>, <em>Backward-Compatibility</em>, and
+          <em>Question Generalization</em> through the lens of generalization and robustness to input
+          distribution shifts. <strong>Q</strong> and <strong>R</strong> represent questions and
+          responses, respectively, with responses generated by the shown generator models (Gemma2,
+          Qwen2, Gemma3, Qwen2.5). <em>Future-Proofing</em> evaluates how well judges trained on
+          responses from weaker, older generators (green: Gemma2, Qwen2) assess responses from
+          stronger, newer generators (yellow: Gemma3, Qwen2.5). <em>Backward-Compatibility</em>
+          examines the reverse direction. <em>Question Generalization</em> measures performance on
+          in-distribution questions and corresponding responses that were both not included (dashed
+          Q and R) in the training.
+        </figcaption>
+        <p class="has-text-centered is-size-7" style="margin-top: 0.75rem">
+          <a href="static/pdfs/judge-generalization-fig1.pdf" target="_blank" rel="noopener"
+            >Download figure PDF</a
+          >
+          (cropped to match the paper; LaTeX <code>trim=120pt 110pt 160pt 70pt</code> at 200&nbsp;dpi).
+        </p>
+      </figure>
     </div>
   </div>
 </section>
-<!-- End teaser video -->
+<!-- End main figure -->
 
 <!-- Paper abstract -->
 <section class="section hero is-light">
@@ -379,11 +409,9 @@
     <div class="container">
       <div id="results-carousel" class="carousel results-carousel">
        <div class="item">
-        <!-- TODO: Replace with your research result images -->
-        <img src="static/images/carousel1.jpg" alt="First research result visualization" loading="lazy"/>
-        <!-- TODO: Replace with description of this result -->
+        <img src="static/images/carousel2.jpg" alt="Additional result figure (placeholder)" loading="lazy"/>
         <h2 class="subtitle has-text-centered">
-          First image description.
+          Additional results (replace with your own figures).
         </h2>
       </div>
       <div class="item">
