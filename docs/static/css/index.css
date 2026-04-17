@@ -540,8 +540,8 @@ code {
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
-  width: min(32rem, calc(100vw - 2rem));
-  max-width: 92vw;
+  width: min(42rem, calc(100vw - 1.5rem));
+  max-width: 96vw;
   background: var(--background-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
@@ -629,6 +629,7 @@ code {
   font-size: 0.9rem;
   color: var(--text-secondary);
   line-height: 1.45;
+  text-wrap: pretty;
 }
 
 .work-venue {
