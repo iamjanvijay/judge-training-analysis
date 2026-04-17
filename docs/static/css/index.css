@@ -495,8 +495,8 @@ code {
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
-  width: 400px;
-  max-width: 90vw;
+  width: min(32rem, calc(100vw - 2rem));
+  max-width: 92vw;
   background: var(--background-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
@@ -552,7 +552,7 @@ code {
 .work-item {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
+  gap: 0.75rem;
   padding: 1rem;
   border-radius: var(--border-radius);
   text-decoration: none;
@@ -566,10 +566,16 @@ code {
   transform: translateX(4px);
 }
 
+.work-info {
+  flex: 1;
+  min-width: 0;
+}
+
 .work-info h5 {
   margin: 0 0 0.5rem 0;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.25;
   color: var(--text-primary);
 }
 
@@ -577,20 +583,34 @@ code {
   margin: 0 0 0.5rem 0;
   font-size: 0.9rem;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .work-venue {
+  display: block;
+  margin-top: 0.35rem;
   font-size: 0.8rem;
   color: var(--text-light);
   font-style: italic;
+  line-height: 1.35;
+}
+
+.work-venue .work-url {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  font-style: normal;
+  color: var(--text-secondary);
+  word-break: break-word;
 }
 
 .work-item .fas {
   color: var(--text-light);
   font-size: 0.9rem;
-  margin-top: 0.2rem;
+  margin-top: 0.15rem;
   flex-shrink: 0;
+  align-self: flex-start;
 }
 
 
